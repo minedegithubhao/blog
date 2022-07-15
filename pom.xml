@@ -111,7 +111,9 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger.version}</version>
         </dependency>
-        <!--swagger模版-->
+        <!--knife4j，swagger模版
+            http://localhost:8080/doc.html
+        -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>

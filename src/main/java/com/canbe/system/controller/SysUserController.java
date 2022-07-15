@@ -1,13 +1,8 @@
 package com.canbe.system.controller;
 
 
-import io.swagger.annotations.*;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 /**
  * <p>

@@ -1,10 +1,8 @@
 package com.canbe.config;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -33,7 +31,7 @@ public class Swagger2Config {
      */
     @Bean(value = "defaultApi2")
     public Docket defaultApi2() {
-        Docket docket=new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 //分组名称
                 .groupName("v1.0版本")
@@ -42,13 +40,10 @@ public class Swagger2Config {
                 .apis(RequestHandlerSelectors.basePackage("com.canbe.system.controller"))
                 .paths(PathSelectors.any())
                 .build();
-        return docket;
     }
 
     /**
      * api文档的详细信息函数,注意这里的注解引用的是哪个
-     *
-     * @return
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
