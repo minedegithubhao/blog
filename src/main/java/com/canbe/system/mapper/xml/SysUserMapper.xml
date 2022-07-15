@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canbe.system.mapper.SysUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.canbe.system.entity.SysUser">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="realname" property="realname" />
+        <result column="password" property="password" />
+        <result column="salt" property="salt" />
+        <result column="avatar" property="avatar" />
+        <result column="birthday" property="birthday" />
+        <result column="sex" property="sex" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="org_code" property="orgCode" />
+        <result column="status" property="status" />
+        <result column="del_flag" property="delFlag" />
+        <result column="third_id" property="thirdId" />
+        <result column="third_type" property="thirdType" />
+        <result column="activiti_sync" property="activitiSync" />
+        <result column="work_no" property="workNo" />
+        <result column="post" property="post" />
+        <result column="telephone" property="telephone" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="user_identity" property="userIdentity" />
+        <result column="depart_ids" property="departIds" />
+        <result column="rel_tenant_ids" property="relTenantIds" />
+        <result column="client_id" property="clientId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, username, realname, password, salt, avatar, birthday, sex, email, phone, org_code, status, del_flag, third_id, third_type, activiti_sync, work_no, post, telephone, create_by, create_time, update_by, update_time, user_identity, depart_ids, rel_tenant_ids, client_id
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include> from sys_user
+    </select>
+</mapper>
