@@ -48,6 +48,11 @@ spring:
     pathmatch:
       #Spring Boot 高版本springboot兼容低版本的swagger需要，2.6+后映射匹配的默认策略已从AntPathMatcher更改为PathPatternParser,需要手动指定为ant-path-matcher
       matching-strategy: ant_path_matcher
+  # 热部署相关
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:com/canbe/**/xml/*Mapper.xml
