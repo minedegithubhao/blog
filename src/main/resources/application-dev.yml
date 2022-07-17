@@ -53,6 +53,9 @@ spring:
     restart:
       enabled: true
       additional-paths: src/main/java
+  #国际化，指定国际化文件路径
+  messages:
+    basename: i18n.message
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:com/canbe/**/xml/*Mapper.xml

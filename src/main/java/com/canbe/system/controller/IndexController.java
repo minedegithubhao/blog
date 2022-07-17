@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author cxd
@@ -27,6 +26,11 @@ public class IndexController {
         return ResponseEntity.ok("Hi:"+name);
     }
 
+    /**
+     * 列表
+     * @return 列表
+     */
+    @ApiOperation(value = "首页")
     @GetMapping("/index")
     public String index(){
         return "news-grid-3";
