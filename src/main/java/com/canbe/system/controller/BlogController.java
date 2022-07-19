@@ -6,6 +6,7 @@ import com.canbe.system.entity.BlogArticle;
 import com.canbe.system.service.IBlogArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,15 +28,13 @@ public class BlogController {
     @Autowired
     IBlogArticleService iBlogArticleService;
 
-    /**
-     * restful,如何传递分页信息，/1/20这种吗？ 还是？current=1&size=20这种
-     * @param pageNo
-     * @param pageSize
-     * @param req
-     * @return
-     */
     @GetMapping("/list")
-    public String list(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+    @ApiOperation(value = "列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNo", value = "当前页", defaultValue = "1", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "pageSize", value = "每页记录数", defaultValue = "12", required = true, dataType = "int")
+    })
+    public String list(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
                              HttpServletRequest req){
         QueryWrapper<BlogArticle> queryWrapper = new QueryWrapper<>();
         Page<BlogArticle> page = new Page<>(pageNo, pageSize);
@@ -43,38 +42,14 @@ public class BlogController {
         return "OK";
     }
 
-    /**
-     * 详情页
-     * @param id 博客ID
-     * @return modelAndView
-     */
     @ApiImplicitParam(name = "id",value = "id",required = true)
-    @ApiOperation(value = "博客详情页")
+    @ApiOperation(value = "详情")
     @GetMapping(value = "/detail/{id}")
-    public ModelAndView detail(@PathVariable("id") String id, ModelAndView modelAndView){
+    public ModelAndView detail(@PathVariable("id") String id){
+        ModelAndView modelAndView = new ModelAndView();
         BlogArticle blogArticle = iBlogArticleService.getById(id);
         modelAndView.setViewName("news-detail");
         modelAndView.addObject(blogArticle);
         return modelAndView;
-    }
-
-    @GetMapping("/news-grid-2")
-    public String grid2(){
-        return "news-grid-2";
-    }
-
-    @GetMapping("/news-grid-3")
-    public String grid3(){
-        return "news-grid-3";
-    }
-
-    @GetMapping("/news-detail")
-    public String newsDetail(){
-        return "news-detail";
-    }
-
-    @GetMapping("/news-list")
-    public String newsList(){
-        return "news-list";
     }
 }
