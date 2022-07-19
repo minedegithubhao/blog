@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canbe.system.mapper.BlogArticleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.canbe.system.entity.BlogArticle">
+        <id column="id" property="id" />
+        <result column="blog_category" property="blogCategory" />
+        <result column="blog_title" property="blogTitle" />
+        <result column="blog_content" property="blogContent" />
+        <result column="create_by" property="createBy" />
+        <result column="create_date" property="createDate" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_date" property="updateDate" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="comments" property="comments" />
+        <result column="reading_views" property="readingViews" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, blog_category, blog_title, blog_content, create_by, create_date, update_by, update_date, delete_flag, comments, reading_views
+    </sql>
+
+</mapper>

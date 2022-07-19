@@ -41,7 +41,7 @@
             <div class="container">
               <div class="open-menuMobile">☰</div>
 <!--              <div class="header-logo"><a href="index.html" class="logo"><img src="/assets/images/logo-black.png" alt="Alay" class="logo-sticky logo-black"><img src="/assets/images/logo-white.png" alt="Alay" class="logo-sticky logo-white"></a></div>-->
-              <div class="header-logo"><a href="index.html" class="logo"><img src="/assets/images/logo2.png" alt="canbe" class="logo-sticky logo-black"><img src="/assets/images/logo2.png" alt="canbe" class="logo-sticky logo-white"></a></div>
+              <div class="header-logo"><a href="index.html" class="logo"><img src="/assets/images/logo2.png" alt="canbe" class="logo-sticky logo-black mylogo" style="max-height: 100px"><img src="/assets/images/logo2.png" alt="canbe" class="logo-sticky logo-white" style="max-height: 100px"></a></div>
               <div class="utility-nav"><span id="trigger-overlay" class="trigger-search-bar"><i class="fa fa-search"></i></span></div>
               <!-- header logo-->
               <!-- main menu-->
@@ -96,8 +96,8 @@
                 <li class="menu-item nav-item"><a href="about.html" class="main-text nav-link">About</a></li>
                 <li class="menu-item nav-item menu-item-has-children dropdown current-menu-ancestor"><a href="#" class="dropdown-toggle nav-link"><i class="fa fa-angle-down btn-open-dropdown"></i>Categories</a>
                   <ul class="dropdown-menu">
-                    <li class="menu-item nav-item"><a href="news-list.html" class="dropdown-text nav-link">Lifestyle</a></li>
-                    <li class="menu-item nav-item"><a href="news-grid-2.html" class="dropdown-text nav-link">Photography</a></li>
+                    <li class="menu-item nav-item"><a th:href="@{/blog/news-list}" class="dropdown-text nav-link">Lifestyle</a></li>
+                    <li class="menu-item nav-item"><a th:href="@{/blog/news-grid-2}" class="dropdown-text nav-link">Photography</a></li>
                     <li class="menu-item nav-item active"><a href="news-grid-3.html" class="dropdown-text nav-link">Fashion</a></li>
                     <li class="menu-item nav-item"><a href="news-detail.html" class="dropdown-text nav-link">News Detail</a></li>
                   </ul>
@@ -143,15 +143,15 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-lg-4">
+                      <div class="col-lg-4" th:each="article,articleStat : ${articles}">
                         <div class="blog-item main-item blog-center mbl">
                           <div class="img-wrap"><img src="/assets/images/news-grid/news-featured-02.jpg" alt="Alay"></div>
-                          <div class="cat-heading">Hello</div><a th:href="@{/blog/detail/{id}(id='123')}" class="title">Hello World!</a>
-                          <p class="content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et iom po dolore.</p>
+                          <div class="cat-heading">Hello</div><a th:href="@{/blog/detail/{id}(id='001')}" th:text="${article.blogTitle}" class="title">Hello World!</a>
+                          <p class="content" th:text="${article.blogContent}">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et iom po dolore.</p>
                           <div class="block-footer">
                             <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
                             <div class="meta-infor box-right">
-                              <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swin</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
+                              <div class="author item"><span class="pre">By</span><a href="#author.html" class="text" th:text="${article.createBy}">Swin</a></div><span class="date item" th:text="${article.createDate}">Dec 29,2018</span>
                             </div>
                           </div>
                         </div>
