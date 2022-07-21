@@ -30,16 +30,16 @@ public class BlogController {
 
     @GetMapping("/list")
     @ApiOperation(value = "列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "pageNo", value = "当前页", defaultValue = "1", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "pageSize", value = "每页记录数", defaultValue = "12", required = true, dataType = "int")
-    })
-    public String list(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
-                             HttpServletRequest req){
-        QueryWrapper<BlogArticle> queryWrapper = new QueryWrapper<>();
+    public ModelAndView list(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                       HttpServletRequest req){
+        ModelAndView modelAndView = new ModelAndView();
         Page<BlogArticle> page = new Page<>(pageNo, pageSize);
-        Page<BlogArticle> articlePage = iBlogArticleService.page(page, queryWrapper);
-        return "OK";
+        Page<BlogArticle> articleList = iBlogArticleService.page(page);
+        iBlogArticleService.page(page);
+        modelAndView.addObject("articles", articleList.getRecords());
+        modelAndView.setViewName("news-list");
+        return modelAndView;
     }
 
     @ApiImplicitParam(name = "id",value = "id",required = true)

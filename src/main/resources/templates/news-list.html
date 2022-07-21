@@ -1,36 +1,7 @@
 ﻿<!DOCTYPE html>
-<html lang="zxx" itemscope itemtype="http://schema.org/WebPage">
+<html lang="zxx" itemscope itemtype="http://schema.org/WebPage" xmlns:th="http://www.thymeleaf.org">
   <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>News List</title>
-    <!-- Bootstrap CSS-->
-    <link href="assets/vendors/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome-->
-    <link rel="stylesheet" href="assets/vendors/font-awesome/css/font-awesome.min.css">
-    <!-- Vendors-->
-    <link rel="stylesheet" href="assets/vendors/slick/slick.min.css">
-    <link rel="stylesheet" href="assets/vendors/slick/slick-theme.min.css">
-    <link rel="stylesheet" href="assets/vendors/animate.min.css">
-    <link rel="stylesheet" href="assets/vendors/magnific-popup/magnific-popup.css">
-    <link rel="stylesheet" href="assets/vendors/bootstrap-datepicker/css/bootstrap-datepicker.min.css">
-    <link rel="stylesheet" href="assets/vendors/fullscreen-overlay/css/style5.css">
-    <link rel="stylesheet" href="assets/vendors/lightbox/css/lightbox.min.css">
-    <script src="assets/vendors/modernizr.custom.js"></script>
-    <!-- Font-icon-->
-    <link rel="stylesheet" href="assets/fonts/font-icon/style.css">
-    <!-- Style-->
-    <link rel="stylesheet" type="text/css" href="assets/css/layout.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/elements.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/shortcode.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/widget.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/extra.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/responsive.css">
-    <!-- Google Font-->
-    <link href="https://fonts.googleapis.com/css?family=Overpass:300,400,600,800,900" rel="stylesheet">
-    <!-- Favicon-->
-    <link rel="icon" href="assets/images/favicon.jpg">
+    <th:block th:include="include :: header('自定义视图分页')" />
   </head>
   <body class="sticky-enable p-news-detail blog-single">
     <div id="pagewrap" class="pagewrap">
@@ -39,7 +10,7 @@
           <div class="header-main alay-section-full">
             <div class="container">
               <div class="open-menuMobile">☰</div>
-              <div class="header-logo"><a href="index.html" class="logo"><img src="assets/images/logo-black.png" alt="Alay" class="logo-sticky logo-black"><img src="assets/images/logo-white.png" alt="Alay" class="logo-sticky logo-white"></a></div>
+              <div class="header-logo"><a href="index.html" class="logo"><img src="/assets/images/logo-black.png" alt="Alay" class="logo-sticky logo-black"><img src="/assets/images/logo-white.png" alt="Alay" class="logo-sticky logo-white"></a></div>
               <div class="utility-nav"><span id="trigger-overlay" class="trigger-search-bar"><i class="fa fa-search"></i></span></div>
               <!-- header logo-->
               <!-- main menu-->
@@ -109,7 +80,7 @@
         <div class="page-container">
           <!-- page heading-->
           <div class="page-heading-container loaded-images-wrapper">
-            <div class="page-heading news-detail"><img src="assets/images/news-2-page-heading-bg.jpg" alt="" class="blog-featured-image">
+            <div class="page-heading news-detail"><img src="/assets/images/news-2-page-heading-bg.jpg" alt="" class="blog-featured-image">
               <div class="title-wrapper">
                 <div class="title">News List</div>
               </div>
@@ -127,148 +98,18 @@
               <div class="row">
                 <div class="col-xl-9 col-lg-8">
                   <div class="mbsl"></div>
-                  <div class="alay-sc-blog-list style-horizontal">
-                    <div class="blog-item sub-item mbl">
+                  <div class="alay-sc-blog-list style-horizontal" >
+                    <table datasrc=""></table>
+                    <div class="blog-item sub-item mbl" th:each="article,articleStat : ${articles}">
                       <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-01.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
+                        <div class="col-lg">
                           <div class="item-desc">
-                            <div class="cat-heading">Photography</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
+                            <a class="title" th:href="@{/blog/detail/{id}(id='001')}" th:text="${article.blogTitle}"> Some of Rule for Beginer to Improve Shooting</a>
+                            <p class="content" th:text="${article.blogContent}">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
                             <div class="block-footer">
                               <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
                               <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="blog-item sub-item mbl">
-                      <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-02.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
-                          <div class="item-desc">
-                            <div class="cat-heading">Beauty</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <div class="block-footer">
-                              <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
-                              <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="blog-item sub-item mbl">
-                      <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-03.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
-                          <div class="item-desc">
-                            <div class="cat-heading">Travel</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <div class="block-footer">
-                              <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
-                              <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="blog-item sub-item mbl">
-                      <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-04.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
-                          <div class="item-desc">
-                            <div class="cat-heading">Lifestyle</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <div class="block-footer">
-                              <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
-                              <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="blog-item sub-item mbl">
-                      <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-05.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
-                          <div class="item-desc">
-                            <div class="cat-heading">Lifestyle</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <div class="block-footer">
-                              <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
-                              <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="blog-item sub-item mbl">
-                      <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-06.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
-                          <div class="item-desc">
-                            <div class="cat-heading">Travel</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <div class="block-footer">
-                              <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
-                              <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="blog-item sub-item mbl">
-                      <div class="row">
-                        <div class="col-lg-5">
-                          <div class="item-image">
-                            <div class="img-wrap landscape"><img src="assets/images/news-grid/news-featured-07.jpg" alt="Alay"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-7">
-                          <div class="item-desc">
-                            <div class="cat-heading">Lifestyle</div><a href="news-detail.html" class="title"> Some of Rule for Beginer to Improve Shooting</a>
-                            <p class="content">Lorem ipsum dolor sit amet, consectetur sicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <div class="block-footer">
-                              <div class="item-left"><a href="news-detail.html" class="readmore">KEEP READING...</a></div>
-                              <div class="meta-infor box-right">
-                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
+                                <div class="author item"><span class="pre">By</span><a href="#author.html" class="text" th:text="${article.createBy}">Swintheme</a></div><a href="news-detail.html" class="date item"> Dec 29,2018</a>
                               </div>
                             </div>
                           </div>
@@ -298,56 +139,56 @@
                       </form>
                     </div>
                     <!-- About -->
-                    <div class="swin-widget alay-sc-about-me sc-wg">
-                      <div class="information">
-                        <div class="title"><span>About Me</span></div>
-                        <div class="avatar"><img src="assets/images/about-me.jpg" alt="Alay"></div>
-                        <div class="author"><a href="#">Chris Rose</a></div>
-                        <div class="des">We are the creativity team, we love travelling... </div>
-                        <ul class="socials list-inline">
-                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-facebook"></i></a></li>
-                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-twitter"></i></a></li>
-                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-linkedin"></i></a></li>
-                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-pinterest"></i></a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div class="swin-widget alay-sc-instagram sc-wg">
-                      <div class="title"><span>Instagram</span></div>
-                      <div class="insta-gallery alay-col2"><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-01.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-02.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-03.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-04.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-04.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-06.jpg" alt="Alay"></a></div>
-                    </div>
+<!--                    <div class="swin-widget alay-sc-about-me sc-wg">-->
+<!--                      <div class="information">-->
+<!--                        <div class="title"><span>About Me</span></div>-->
+<!--                        <div class="avatar"><img src="/assets/images/about-me.jpg" alt="Alay"></div>-->
+<!--                        <div class="author"><a href="#">Chris Rose</a></div>-->
+<!--                        <div class="des">We are the creativity team, we love travelling... </div>-->
+<!--                        <ul class="socials list-inline">-->
+<!--                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-facebook"></i></a></li>-->
+<!--                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-twitter"></i></a></li>-->
+<!--                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-linkedin"></i></a></li>-->
+<!--                          <li><a href="#" tabindex="0" class="swin-transition"><i class="swin-transition fa fa-pinterest"></i></a></li>-->
+<!--                        </ul>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="swin-widget alay-sc-instagram sc-wg">-->
+<!--                      <div class="title"><span>Instagram</span></div>-->
+<!--                      <div class="insta-gallery alay-col2"><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-01.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-02.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-03.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-04.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-04.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-06.jpg" alt="Alay"></a></div>-->
+<!--                    </div>-->
                     <!-- categories-->
                     <div class="swin-widget swin-panel widget-categories">
                       <div class="swin-title-line text-center"><span>Category</span></div>
                       <div class="widget-body widget-content clearfix"><a href="#" class="link"><i class="icons fa fa-angle-right"></i><span class="text">hot Drink</span><span class="badge">12</span></a><a href="#" class="link"><i class="icons fa fa-angle-right"></i><span class="text">spicy food</span><span class="badge">14</span></a><a href="#" class="link"><i class="icons fa fa-angle-right"></i><span class="text">New Dishes</span><span class="badge">17</span></a><a href="#" class="link"><i class="icons fa fa-angle-right"></i><span class="text">Dessert</span><span class="badge">07</span></a><a href="#" class="link"><i class="icons fa fa-angle-right"></i><span class="text">Discount Event</span><span class="badge">06</span></a></div>
                     </div>
                     <!-- recent post-->
-                    <div class="swin-widget alay-sc-recent-post sc-wg">
-                      <div class="title"><span>Recent Post</span></div>
-                      <div class="content">
-                        <div class="blog-item">
-                          <div class="media"><img src="assets/images/blog/blog-layout-01.jpg" alt="Alay" class="mr-3">
-                            <div class="media-body">
-                              <h6 class="title mt-0"><a href="#">New Campaign of The Lexis Coming Up</a></h6><span class="date">Dec 29,2018</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="blog-item">
-                          <div class="media"><img src="assets/images/blog/blog-layout-01.jpg" alt="Alay" class="mr-3">
-                            <div class="media-body">
-                              <h6 class="title mt-0"><a href="#">New Campaign of The Lexis Coming Up</a></h6><span class="date">Dec 29,2018</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="blog-item">
-                          <div class="media"><img src="assets/images/blog/blog-layout-01.jpg" alt="Alay" class="mr-3">
-                            <div class="media-body">
-                              <h6 class="title mt-0"><a href="#">New Campaign of The Lexis Coming Up</a></h6><span class="date">Dec 29,2018</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="swin-widget alay-sc-recent-post sc-wg">-->
+<!--                      <div class="title"><span>Recent Post</span></div>-->
+<!--                      <div class="content">-->
+<!--                        <div class="blog-item">-->
+<!--                          <div class="media"><img src="/assets/images/blog/blog-layout-01.jpg" alt="Alay" class="mr-3">-->
+<!--                            <div class="media-body">-->
+<!--                              <h6 class="title mt-0"><a href="#">New Campaign of The Lexis Coming Up</a></h6><span class="date">Dec 29,2018</span>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="blog-item">-->
+<!--                          <div class="media"><img src="/assets/images/blog/blog-layout-01.jpg" alt="Alay" class="mr-3">-->
+<!--                            <div class="media-body">-->
+<!--                              <h6 class="title mt-0"><a href="#">New Campaign of The Lexis Coming Up</a></h6><span class="date">Dec 29,2018</span>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="blog-item">-->
+<!--                          <div class="media"><img src="/assets/images/blog/blog-layout-01.jpg" alt="Alay" class="mr-3">-->
+<!--                            <div class="media-body">-->
+<!--                              <h6 class="title mt-0"><a href="#">New Campaign of The Lexis Coming Up</a></h6><span class="date">Dec 29,2018</span>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
                     <!-- tag-->
                     <div class="swin-widget swin-panel widget-tag">
                       <div class="swin-title-line text-center"><span>TAG</span></div>
@@ -363,7 +204,7 @@
                       </div>
                     </div>
                     <!-- gallery-->
-                    <div class="swin-widget alay-sc-image block-center"><img src="assets/images/ad.jpg" alt="Alay"></div>
+<!--                    <div class="swin-widget alay-sc-image block-center"><img src="/assets/images/ad.jpg" alt="Alay"></div>-->
                   </div>
                   <div class="mbsl"></div>
                 </div>
@@ -380,7 +221,7 @@
                 <div class="alay-widget">
                   <div class="widget-title title"><span class="font-weight-bold"> Follow on instagram</span></div>
                   <div class="widget-content">
-                    <div class="instagram-gallery alay-col-6"><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-01.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-02.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-03.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-04.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-05.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="assets/images/instagram/follow-insta-06.jpg" alt="Alay"></a></div>
+                    <div class="instagram-gallery alay-col-6"><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-01.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-02.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-03.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-04.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-05.jpg" alt="Alay"></a><a href="#" class="img-wrap"><img src="/assets/images/instagram/follow-insta-06.jpg" alt="Alay"></a></div>
                   </div>
                 </div>
               </div>
@@ -423,30 +264,7 @@
         <div class="bounce3"></div>
       </div>
     </div>
-    <!-- jQuery-->
-    <script src="assets/vendors/jquery-1.10.2.min.js"></script>
-    <!-- Bootstrap Dependence-->
-    <script src="assets/vendors/popper.min.js"></script>
-    <!-- Bootstrap JavaScript-->
-    <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-    <!-- Vendors-->
-    <script src="assets/vendors/slick/slick.min.js"></script>
-    <script src="assets/vendors/masonry/masonry.pkgd.min.js"></script>
-    <script src="assets/vendors/imagesloaded/imagesloaded.pkgd.min.js"></script>
-    <script src="assets/vendors/jquery-countTo/jquery.countTo.min.js"></script>
-    <script src="assets/vendors/jquery-appear/jquery.appear.min.js"></script>
-    <script src="assets/vendors/parallax/parallax.min.js"></script>
-    <script src="assets/vendors/gmaps/gmaps.min.js"></script>
-    <script src="assets/vendors/audiojs/audio.min.js"></script>
-    <script src="assets/vendors/wowjs/wow.min.js"></script>
-    <script src="assets/vendors/skrollr.min.js"></script>
-    <script src="assets/vendors/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
-    <script src="assets/vendors/magnific-popup/jquery.magnific-popup.min.js"></script>
-    <script src="assets/vendors/classie.js"></script>
-    <script src="assets/vendors/fullscreen-overlay/js/style5.js"></script>
-    <script src="assets/vendors/lightbox/js/lightbox.min.js"></script>
-    <!-- Own script-->
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/shortcode.js"></script>
+
+    <div th:include="include :: footer"></div>
   </body>
 </html>

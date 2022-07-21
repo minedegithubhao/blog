@@ -1,0 +1,72 @@
+<header class="header">
+    <div class="header-main alay-section-full">
+        <div class="container">
+            <div class="open-menuMobile">☰</div>
+            <!--              <div class="header-logo"><a href="index.html" class="logo"><img src="/assets/images/logo-black.png" alt="Alay" class="logo-sticky logo-black"><img src="/assets/images/logo-white.png" alt="Alay" class="logo-sticky logo-white"></a></div>-->
+            <div class="header-logo"><a href="index.html" class="logo"><img src="/assets/images/logo2.png" alt="canbe" class="logo-sticky logo-black mylogo" style="max-height: 100px"><img src="/assets/images/logo2.png" alt="canbe" class="logo-sticky logo-white" style="max-height: 100px"></a></div>
+            <div class="utility-nav"><span id="trigger-overlay" class="trigger-search-bar"><i class="fa fa-search"></i></span></div>
+            <!-- header logo-->
+            <!-- main menu-->
+            <nav class="main-nav-wrapper">
+                <div class="main-nav">
+                    <ul id="main-nav" class="nav nav-pills">
+                        <li class="menu-item nav-item menu-item-has-children dropdown"><a href="index.html" class="dropdown-toggle nav-link" th:text="#{Home}"><i class="fa fa-angle-down btn-open-dropdown"></i>Home</a>
+                            <ul class="dropdown-menu">
+                                <li class="menu-item nav-item"><a href="home-dark.html" class="dropdown-text nav-link">Home Dark Mode</a></li>
+                                <li class="menu-item nav-item"><a href="index.html" class="dropdown-text nav-link">Home Modern 1</a></li>
+                                <li class="menu-item nav-item"><a href="home2.html" class="dropdown-text nav-link">Home Modern 2</a></li>
+                                <li class="menu-item nav-item"><a href="home3.html" class="dropdown-text nav-link">Home Modern 3</a></li>
+                                <li class="menu-item nav-item"><a href="home-masonry.html" class="dropdown-text nav-link">Home Masonry</a></li>
+                                <li class="menu-item nav-item"><a href="home-minimalist-1.html" class="dropdown-text nav-link">Home Minimalist 01</a></li>
+                                <li class="menu-item nav-item"><a href="home-minimalist-2.html" class="dropdown-text nav-link">Home Minimalist 02</a></li>
+                                <li class="menu-item nav-item"><a href="home-minimalist-3.html" class="dropdown-text nav-link">Home Minimalist 03</a></li>
+                                <li class="menu-item nav-item"><a href="home-fullwidth.html" class="dropdown-text nav-link">Home Fullwidth</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item nav-item"><a href="about.html" class="main-text nav-link" th:text="#{About}">About</a></li>
+                        <li class="menu-item nav-item menu-item-has-children dropdown current-menu-ancestor"><a href="#" class="dropdown-toggle nav-link" th:text="#{Categories}"><i class="fa fa-angle-down btn-open-dropdown"></i>Categories</a>
+                            <ul class="dropdown-menu">
+                                <li class="menu-item nav-item"><a href="news-list.html" class="dropdown-text nav-link">Lifestyle</a></li>
+                                <li class="menu-item nav-item"><a href="news-grid-2.html" class="dropdown-text nav-link">Photography</a></li>
+                                <li class="menu-item nav-item active"><a href="news-grid-3.html" class="dropdown-text nav-link">Fashion</a></li>
+                                <li class="menu-item nav-item"><a href="news-detail.html" class="dropdown-text nav-link">News Detail</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item nav-item"><a href="contact.html" class="main-text nav-link" th:text="#{Contact}">Contact</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="header-mobile">
+        <div class="toggle-header-mobile">×</div>
+        <nav class="main-nav-mobile">
+            <ul>
+                <li class="menu-item nav-item menu-item-has-children dropdown"><a href="index.html" class="dropdown-toggle nav-link"><i class="fa fa-angle-down btn-open-dropdown"></i>Home</a>
+                    <ul class="dropdown-menu">
+                        <li class="menu-item nav-item"><a href="home-dark.html" class="dropdown-text nav-link">Home Dark Mode</a></li>
+                        <li class="menu-item nav-item"><a href="index.html" class="dropdown-text nav-link">Home Modern 1</a></li>
+                        <li class="menu-item nav-item"><a href="home2.html" class="dropdown-text nav-link">Home Modern 2</a></li>
+                        <li class="menu-item nav-item"><a href="home3.html" class="dropdown-text nav-link">Home Modern 3</a></li>
+                        <li class="menu-item nav-item"><a href="home-masonry.html" class="dropdown-text nav-link">Home Masonry</a></li>
+                        <li class="menu-item nav-item"><a href="home-minimalist-1.html" class="dropdown-text nav-link">Home Minimalist 01</a></li>
+                        <li class="menu-item nav-item"><a href="home-minimalist-2.html" class="dropdown-text nav-link">Home Minimalist 02</a></li>
+                        <li class="menu-item nav-item"><a href="home-minimalist-3.html" class="dropdown-text nav-link">Home Minimalist 03</a></li>
+                        <li class="menu-item nav-item"><a href="home-fullwidth.html" class="dropdown-text nav-link">Home Fullwidth</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item nav-item"><a href="about.html" class="main-text nav-link">About</a></li>
+                <li class="menu-item nav-item menu-item-has-children dropdown current-menu-ancestor"><a href="#" class="dropdown-toggle nav-link"><i class="fa fa-angle-down btn-open-dropdown"></i>Categories</a>
+                    <ul class="dropdown-menu">
+                        <li class="menu-item nav-item"><a th:href="@{/blog/news-list}" class="dropdown-text nav-link">Lifestyle</a></li>
+                        <li class="menu-item nav-item"><a th:href="@{/blog/news-grid-2}" class="dropdown-text nav-link">Photography</a></li>
+                        <li class="menu-item nav-item active"><a href="news-grid-3.html" class="dropdown-text nav-link">Fashion</a></li>
+                        <li class="menu-item nav-item"><a href="news-detail.html" class="dropdown-text nav-link">News Detail</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item nav-item"><a href="contact.html" class="main-text nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="header-mobile-backdrop"></div>
+</header>
