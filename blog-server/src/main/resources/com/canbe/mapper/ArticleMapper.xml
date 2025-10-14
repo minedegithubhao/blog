@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canbe.mapper.ArticleMapper">
+
+    <select id="list" resultType="com.canbe.pojo.Article">
+        SELECT *,category.category_name,user.nickname as create_username FROM article left join category on article.category_id = category.id left join user on article.create_user = user.id
+        <where>
+            <if test="categoryId != null and categoryId != ''">
+                and category_id = #{categoryId}
+            </if>
+            <if test="isPublish != null and isPublish != ''">
+                and is_publish = #{isPublish}
+            </if>
+        </where>
+    </select>
+</mapper>
