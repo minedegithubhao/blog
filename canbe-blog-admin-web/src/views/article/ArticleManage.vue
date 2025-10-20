@@ -102,7 +102,7 @@ const articleList = async () => {
     state: state.value ? state.value : null,
   };
   let result = await articleListService(params);
-  articles.value = result.data.items;
+  articles.value = result.data.records;
 
   //为列表中添加categoryName属性
   for (let i = 0; i < articles.value.length; i++) {
@@ -118,6 +118,7 @@ const articleList = async () => {
   total.value = result.data.total;
 };
 articleList();
+
 
 const search = () => {
   articleList();

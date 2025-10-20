@@ -42,6 +42,11 @@ public class Category implements Serializable {
     private String categoryName;
 
     /**
+     * 分类编号
+     */
+    private String categoryCode;
+
+    /**
      * 排序
      */
     private Integer sortBy;
