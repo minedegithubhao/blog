@@ -29,3 +29,4 @@ mybatis-plus:
   configuration:
     # 驼峰转下划线
     map-underscore-to-camel-case: true
+

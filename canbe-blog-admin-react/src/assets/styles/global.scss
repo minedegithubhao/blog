@@ -1,0 +1,17 @@
+$color: #eee;
+body {
+  background-color: $color;
+  // 禁止用户选中web页面文本
+  user-select: none;
+}
+img {
+  // 禁止用户拖动图片
+  -webkit-user-drag: none;
+}
+.table-row-light {
+  background-color: #ffffff;
+}
+
+.table-row-dark {
+  background-color: #f9f9f9;
+}

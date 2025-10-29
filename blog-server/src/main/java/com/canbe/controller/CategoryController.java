@@ -35,7 +35,7 @@ public class CategoryController {
      * @return Result Response result - 响应结果
      */
     @PostMapping()
-    public Result add(@RequestBody @Validated(Category.Add.class) Category category) {
+    public Result<String> add(@RequestBody @Validated(Category.Add.class) Category category) {
         categoryService.save(category);
         return Result.success();
     }
@@ -79,7 +79,7 @@ public class CategoryController {
      * @return Result Response result - 响应结果
      */
     @PutMapping
-    public Result update(@RequestBody @Validated(Category.Update.class) Category category) {
+    public Result<String> update(@RequestBody @Validated(Category.Update.class) Category category) {
         categoryService.updateById(category);
         return Result.success();
     }
@@ -94,7 +94,7 @@ public class CategoryController {
      * @return Result Response result - 响应结果
      */
     @DeleteMapping
-    public Result delete(@RequestParam(name = "id") Integer id) {
+    public Result<String> delete(@RequestParam(name = "id") Integer id) {
         categoryService.removeById(id);
         return Result.success();
     }

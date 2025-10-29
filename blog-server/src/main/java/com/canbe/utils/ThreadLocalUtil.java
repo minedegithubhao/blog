@@ -1,5 +1,7 @@
 package com.canbe.utils;
 
+import java.util.Map;
+
 /**
  * ThreadLocal 工具类
  * ThreadLocal Utility Class
@@ -47,5 +49,10 @@ public class ThreadLocalUtil {
      */
     public static void remove(){
         THREAD_LOCAL.remove();
+    }
+
+    public static String getUsername() {
+        Map<String, Object> claims = get();
+        return (String) claims.get("username");
     }
 }

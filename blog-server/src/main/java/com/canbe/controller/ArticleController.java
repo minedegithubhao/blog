@@ -35,7 +35,7 @@ public class ArticleController {
      * @return Result Response result - 响应结果
      */
     @PostMapping
-    public Result add(@RequestBody @Validated Article article) {
+    public Result<String> add(@RequestBody @Validated Article article) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer id = (Integer) claims.get("id");
         article.setCreateUser(id);
@@ -74,7 +74,7 @@ public class ArticleController {
      * @return Result Response result - 响应结果
      */
     @PutMapping
-    public Result update(@RequestBody @Validated Article article) {
+    public Result<String> update(@RequestBody @Validated Article article) {
         articleService.updateById(article);
         return Result.success();
     }

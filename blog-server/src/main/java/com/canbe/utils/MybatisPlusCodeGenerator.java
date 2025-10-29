@@ -27,8 +27,8 @@ public class MybatisPlusCodeGenerator {
                 .globalConfig(builder -> {
                     builder.author("canbe") // 设置作者
 //                            .enableSwagger() // 开启 swagger 模式
-//                            .outputDir(System.getProperty("user.dir") + "/src/main/java"); // 指定输出目录
-                            .outputDir("D://");
+                            .outputDir(System.getProperty("user.dir") + "/blog-server/src/main/java"); // 指定输出目录
+//                            .outputDir("D://");
                 })
                 .packageConfig(builder ->
                                 builder.parent("com.canbe") // 设置父包名
@@ -38,11 +38,11 @@ public class MybatisPlusCodeGenerator {
                                         .service("service") // Service接口包名
                                         .serviceImpl("service.impl") // Service实现类包名
                                         .controller("controller") // Controller包名
-//                                .pathInfo(Collections.singletonMap(OutputFile.xml, System.getProperty("user.dir") + "/src/main/resources/mapper")) // 设置mapperXml生成路径
-                                        .pathInfo(Collections.singletonMap(OutputFile.xml, "D://"))
+                                        .pathInfo(Collections.singletonMap(OutputFile.xml, System.getProperty("user.dir") + "/blog-server/src/main/resources/mapper")) // 设置mapperXml生成路径
+//                                        .pathInfo(Collections.singletonMap(OutputFile.xml, "D://"))
                 )
                 .strategyConfig(builder ->
-                                builder.addInclude("category", "tag", "user") // 设置需要生成的表名
+                                builder.addInclude("sys_category") // 设置需要生成的表名
 //                                .addTablePrefix("t_", "c_") // 设置过滤表前缀
                                         // Entity策略配置
                                         .entityBuilder()

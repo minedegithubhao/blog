@@ -1,0 +1,47 @@
+.loginBox {
+  .ant-input-affix-wrapper {
+    // 设置透明背景
+    background-color: rgba(255, 255, 255, 0);
+    // 输入框边框颜色
+    border-color: #1890ff;
+    color: rgba(255, 255, 255, 0.5);
+
+    // 设置placeholder颜色为白色
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .ant-input-password {
+    // 确保密码框的眼睛图标正常显示
+    .ant-input-password-icon {
+      color: rgba(255, 255, 255, 0.5);
+
+      &:hover {
+        color: #1890ff;
+      }
+    }
+  }
+
+  // 验证码
+  .captchaBox {
+    display: flex;
+    
+    .captchaImg {
+      height: 32px;
+      margin-left: 20px;
+    }
+  }
+
+  .ant-input {
+      // 设置透明背景
+      background-color: rgba(255, 255, 255, 0);
+      // 输入框边框颜色
+      border-color: #1890ff;
+      color: rgba(255, 255, 255, 0.5);
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5)
+      }
+    }
+}

@@ -38,74 +38,6 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
 
     /**
-     * Register - 注册
-     * 处理用户注册请求，验证用户名是否已存在，如果不存在则注册新用户
-     * <p>
-     * Process user registration request, verify whether the username already exists,
-     * and register a new user if it does not exist
-     *
-     * @param username Username - 用户名
-     * @param password Password - 密码
-     * @return Result Response result - 响应结果
-     */
-    @PostMapping("/register")
-    public Result register(@Pattern(regexp = "^\\S{5,16}$") String username,
-                           @Pattern(regexp = "^\\S{5,16}$") String password) {
-        // 查询用户名是否已存在
-        User user = userService.getOne(new QueryWrapper<User>().eq("username", username));
-        // 插入用户
-        if (user == null) {
-            // 不存在则注册
-            user = new User();
-            // 加密密码 - Encrypt password
-            String md5String = Md5Util.getMD5String(password);
-            user.setUsername(username);
-            user.setPassword(md5String);
-            userService.save(user);
-            return Result.success();
-        } else {
-            // 存在则返回错误信息
-            return Result.error("用户名已存在");
-        }
-    }
-
-    /**
-     * Login - 登录
-     * 处理用户登录请求，验证用户名和密码，如果验证通过则生成并返回JWT token
-     * <p>
-     * Process user login request, verify username and password,
-     * generate and return JWT token if verification passes
-     *
-     * @param username Username - 用户名
-     * @param password Password - 密码
-     * @return Result<String> Response result with token - 带token的响应结果
-     */
-    @PostMapping("/login")
-    public Result<String> login(@Pattern(regexp = "^\\S{5,16}$") String username,
-                                @Pattern(regexp = "^\\S{5,16}$") String password) {
-
-        // 查询用户名是否已存在
-        User user = userService.getOne(new QueryWrapper<User>().eq("username", username));
-        // 用户不存在则返回错误信息
-        if (user == null) {
-            return Result.error("用户名不存在");
-        }
-        // 密码错误则返回错误信息
-        String md5String = Md5Util.getMD5String(password);
-        if (!user.getPassword().equals(md5String)) {
-            return Result.error("密码错误");
-        }
-
-        // 登录成功则返回token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", user.getId());
-        claims.put("username", user.getUsername());
-        String token = JwtUtil.genToken(claims);
-        stringRedisTemplate.opsForValue().set(token, token, JwtUtil.EXPIRE_TIME, TimeUnit.MILLISECONDS);
-        return Result.success(token);
-    }
-
-    /**
      * Get User Information - 获取用户信息
      * 获取当前登录用户的信息
      * <p>
@@ -131,7 +63,7 @@ public class UserController {
      * @return Result Response result - 响应结果
      */
     @PutMapping("/update")
-    public Result update(@RequestBody @Validated User user) {
+    public Result<String> update(@RequestBody @Validated User user) {
         userService.updateById(user);
         return Result.success();
     }
@@ -146,7 +78,7 @@ public class UserController {
      * @return Result Response result - 响应结果
      */
     @PatchMapping("/updateAvatar")
-    public Result updateAvatar(@RequestParam @URL String avatarUrl) {
+    public Result<String> updateAvatar(@RequestParam @URL String avatarUrl) {
         // 从ThreadLocal中获取当前用户信息 - Get current user information from ThreadLocal
         Map<String, Object> claims = ThreadLocalUtil.get();
         // 获取用户ID - Get user ID
@@ -172,7 +104,7 @@ public class UserController {
      * @return Result Response result - 响应结果
      */
     @PatchMapping("/updatePwd")
-    public Result updatePwd(@RequestBody Map<String, String> params, @RequestHeader("Authorization") String token) {
+    public Result<String> updatePwd(@RequestBody Map<String, String> params, @RequestHeader("Authorization") String token) {
         // 1.validate params
         String old_pwd = params.get("old_pwd");
         String new_pwd = params.get("new_pwd");

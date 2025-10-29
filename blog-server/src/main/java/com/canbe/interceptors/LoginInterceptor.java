@@ -47,6 +47,7 @@ public class LoginInterceptor implements HandlerInterceptor {
                 throw new RuntimeException("token not exist");
             }
             Map<String, Object> claims = JwtUtil.parseToken(token);
+
             // save userInfo in ThreadLocal - 将用户信息保存到ThreadLocal中
             ThreadLocalUtil.set(claims);
             return true;
