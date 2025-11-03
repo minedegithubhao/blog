@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 export default function useCaptcha() {
 
-  const url = "/login/genImageCaptcha";
+  const url = "/api/public/genImageCaptcha";
 
   // 添加更新验证码图片的方法
     const refreshCaptcha = () => {

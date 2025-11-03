@@ -4,7 +4,7 @@ import store from "@/stores/index";
 import { removeToken } from "@/stores/reducers/token";
 
 // 创建axios实例
-const instance = axios.create({
+const request = axios.create({
   // 基本请求路径的抽取
   baseURL: "/api",
   // 这个时间是你每次请求的过期时间，这次请求认为20秒之后这个请求就是失败的
@@ -12,12 +12,12 @@ const instance = axios.create({
 });
 
 // 请求拦截器
-instance.interceptors.request.use(
+request.interceptors.request.use(
   (config) => {
     // 在发送请求之前做什么
     const token = store.getState().tokenStore.token;
     // 如果token中有值，在携带
-    if (token) {
+    if (token && token.trim() !== "") {
       config.headers.Authorization = token;
     }
     return config;
@@ -29,7 +29,7 @@ instance.interceptors.request.use(
 );
 
 // 响应拦截器
-instance.interceptors.response.use(
+request.interceptors.response.use(
   (result) => {
     // 判断业务状态码
     if (result.data.code === 0) {
@@ -42,7 +42,7 @@ instance.interceptors.response.use(
     return Promise.reject(result.data);
   },
   (err) => {
-    console.log("err", err);
+    alert(err);
     // 未登录
     if (err.response?.status === 401) {
       message.error("请先登录");
@@ -57,4 +57,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance;
+export default request;

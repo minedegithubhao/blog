@@ -20,15 +20,15 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
-      '/login/genImageCaptcha': { // 验证码图片
+      '/public/genImageCaptcha': { // 验证码图片
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      '/file/upload': { // 文件
+      '/public/upload': { // 文件
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      '/file/download': { // 文件
+      '/public/download': { // 文件
         target: 'http://localhost:8080',
         changeOrigin: true,
       }

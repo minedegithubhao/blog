@@ -31,10 +31,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 // 添加不拦截路径
                 // Add paths that should not be intercepted
-                .excludePathPatterns("/login/login", "/login/register", "/login/genImageCaptcha")
                 // 对/public放行
                 // Allow access to /public paths
-                .excludePathPatterns("/public/**")
-                .excludePathPatterns("/file/**");
+                .excludePathPatterns("/public/**");
     }
 }

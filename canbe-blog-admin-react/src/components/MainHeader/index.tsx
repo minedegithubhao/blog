@@ -1,10 +1,13 @@
 import React from "react";
-import { Layout, theme, Avatar, Button, Dropdown } from "antd";
+import { Layout, theme, Avatar, Button, Dropdown, message } from "antd";
 import type { MenuProps } from "antd";
 import logoImage from "@/assets/images/image.png";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { changeCollapse } from "@/stores/reducers/tab";
+import { useNavigate } from "react-router-dom";
+import { removeToken } from "@/stores/reducers/token";
+
 const { Header } = Layout;
 
 interface MainHeaderProps {
@@ -16,6 +19,9 @@ const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const items: MenuProps["items"] = [
     {
@@ -36,7 +42,21 @@ const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
     },
   ];
 
-  const dispatch = useDispatch();
+  const handleMenuClick: MenuProps["onClick"] = (e) => {
+    // 退出登录
+    if (e.key === "2") {
+      navigate("/login");
+      dispatch(removeToken());
+      message.success("退出成功");
+    }
+  };
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
+
+  
 
   return (
     <Header
@@ -58,7 +78,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
           height: 64,
         }}
       />
-      <Dropdown menu={{ items }} placement="bottomRight">
+      <Dropdown menu={menuProps} placement="bottomRight">
         <Avatar size="large" src={<img src={logoImage} alt="logo" />} />
       </Dropdown>
     </Header>

@@ -6,5 +6,5 @@ export const loginService = (loginModule: LoginModel):Promise<Result> => {
   for (const key in loginModule) {
     params.append(key, loginModule[key]);
   }
-  return request.post("/login/login", params);
+  return request.post("/public/login", params);
 };

@@ -41,7 +41,7 @@ const BlogMainContent: React.FC<BlogMainContentProps> = ({ articlePage }) => {
                     </div>
                     <Image
                       className={styles.postImage}
-                      src={`/file/download/${article.cover}`}
+                      src={`/public/download/${article.cover}`}
                       preview={false}
                     />
                   </div>

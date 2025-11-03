@@ -82,7 +82,7 @@ const routes = [
     element: <BlogWeb />,
     children: [
       {
-        path: "/web",
+        index: true,
         element: <Navigate to="/web/category" />,
       },
       {

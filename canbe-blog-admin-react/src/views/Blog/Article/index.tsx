@@ -140,7 +140,7 @@ const Arcitle: React.FC = () => {
       render: (cover: string) => (
         <div style={{ height: "50px" }}>
           <img
-            src={`/file/download/${cover}`}
+            src={`/public/download/${cover}`}
             alt="封面"
             style={{
               width: "100%",

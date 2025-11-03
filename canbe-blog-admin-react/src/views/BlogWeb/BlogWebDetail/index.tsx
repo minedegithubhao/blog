@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Divider } from "antd";
 import styles from "./index.module.scss";
-import { getArticleByIdService } from "@/api/article";
+import { getWebArticleByIdService } from "@/api/web/webArticle";
 import { useLocation } from "react-router-dom";
 import { MdPreview } from "md-editor-rt";
 import "md-editor-rt/lib/preview.css";
@@ -11,6 +11,7 @@ const BlogWebDetail: React.FC = () => {
   const [article, setArticle] = useState<SysArticle>({} as SysArticle);
 
   useEffect(() => {
+    // 从url获取文章id
     const urlParams = new URLSearchParams(location.search);
     const id = urlParams.get("id");
     if (id) {
@@ -19,7 +20,7 @@ const BlogWebDetail: React.FC = () => {
   }, [location]);
 
   const getArticleById = async (id: number) => {
-    const result = await getArticleByIdService(id);
+    const result = await getWebArticleByIdService(id);
     setArticle(result.data);
   };
 

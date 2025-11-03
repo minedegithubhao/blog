@@ -22,7 +22,7 @@ import java.util.List;
  * @since 2025-10-30
  */
 @RestController
-@RequestMapping("/sysCategory")
+@RequestMapping("/sys/sysCategory")
 public class SysCategoryController {
 
     @Resource

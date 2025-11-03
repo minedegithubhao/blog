@@ -1,63 +1,46 @@
+import { getWebArtilePageService } from "@/api/web/webArticle";
+import { usePagination } from "@/hooks/usePagination";
 import { FORMAT_DATE, formateDateTime } from "@/utils/time";
 import { Card, Col, Divider, Image, Row, Space } from "antd";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { usePagination } from "@/hooks/usePagination";
-import { getArtilePageService } from "@/api/article";
 import styles from "./index.module.scss";
-import { useBlogWebContext } from "@/context/BlogWebContext";
 
 const space = 20;
 
 const BlogWebList: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { paginationParams } = usePagination();
   const [articlePage, setArticlePage] = React.useState<SysArticle[]>([]);
-  const { selectedKey, setSelectedKey } = useBlogWebContext();
 
-  // 监听 location 变化（处理浏览器前进/后退按钮）
+  // 监听url变化，重新加载数据
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const categoryIdFromUrl = urlParams.get("categoryId");
-
-    // 如果 URL 中的 categoryId 与当前 selectedKey 不同，则更新 selectedKey
-    if (categoryIdFromUrl && categoryIdFromUrl !== selectedKey) {
-      setSelectedKey(categoryIdFromUrl);
+    // 获取url参数
+    const categoryId = new URLSearchParams(location.search).get("categoryId") || "";
+    // 如果没有categoryId参数，不执行数据加载
+    if (!categoryId) {
+      return;
     }
-
-    // 重新加载数据
-    loadDataWithPagination();
-  }, [location]); // 监听 location 变化
-
-  // 当selectedKey改变时更新URL参数
-  useEffect(() => {
-    if (selectedKey) {
-      const urlParams = new URLSearchParams();
-      urlParams.set("categoryId", selectedKey);
-
-      // 完全依赖React Router的路由配置，不进行任何路径判断
-      // 直接使用当前路径，让React Router处理所有跳转逻辑
-      navigate(`/web/category?${urlParams.toString()}`);
-      loadDataWithPagination();
-    }
-  }, [selectedKey]);
+    loadDataWithPagination(categoryId);
+  }, [location]);
 
   /**
    * 加载分页数据
    */
-  const loadDataWithPagination = async () => {
+  const loadDataWithPagination = async (categoryId?: string) => {
     const queryParams = {
-      categoryId: selectedKey,
+      categoryId: categoryId,
       pageNum: paginationParams.current,
       pageSize: paginationParams.pageSize,
     } as SysArticleQueryParams;
-    const res = await getArtilePageService(queryParams);
+    const res = await getWebArtilePageService(queryParams);
     setArticlePage(res.data.records);
   };
 
   const onClick = (id: number) => {
-    const urlParams = new URLSearchParams();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("categoryId", urlParams.get("categoryId") + "");
     urlParams.set("id", id + "");
     navigate(`/web/detail?${urlParams.toString()}`);
   };
@@ -82,7 +65,7 @@ const BlogWebList: React.FC = () => {
                   </div>
                   <Image
                     className={styles.postImage}
-                    src={`/file/download/${article.cover}`}
+                    src={`/public/download/${article.cover}`}
                     preview={false}
                   />
                 </div>

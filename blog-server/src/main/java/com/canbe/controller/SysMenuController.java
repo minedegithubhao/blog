@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @since 2025-10-28
  */
 @RestController
-@RequestMapping("/sysMenu")
+@RequestMapping("/sys/sysMenu")
 public class SysMenuController {
 
     @Resource

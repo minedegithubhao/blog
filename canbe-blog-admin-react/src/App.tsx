@@ -14,13 +14,20 @@ const AuthRoute = () => {
   const outlet = useRoutes(routes);
   const token = store.getState().tokenStore.token;
 
+  // web端不需要登录认证
+  if (location.pathname.startsWith("/web")) {
+    return outlet;
+  }
+  // /login，有token，则跳转首页
   if (location.pathname === "/login" && token) {
     return <Navigate to="/home" />;
   }
+  // 是/login，没有token，则跳转登录页
   if (location.pathname !== "/login" && !token) {
     message.warning("您还未登录,请先登录");
     return <Navigate to="/login" />;
   }
+  // 其他，正常显示页面
   return outlet;
 };
 

@@ -26,7 +26,7 @@ import java.util.Map;
  * @since 2025-10-28
  */
 @RestController
-@RequestMapping("/sysArticle")
+@RequestMapping("/sys/sysArticle")
 public class SysArticleController {
 
     @Resource

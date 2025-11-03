@@ -2,7 +2,6 @@ import { PlusOutlined } from "@ant-design/icons";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { Image, message, Upload } from "antd";
 import React, { useState, useEffect } from "react";
-import { deleteFileService } from "@/api/file";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -43,7 +42,7 @@ const CardUpload: React.FC<CardUploadProps> = ({
         uid: "-1",
         name: initCover,
         status: "done",
-        url: `/file/download/${initCover}`,
+        url: `/public/download/${initCover}`,
       };
       setFileList([file]);
       setPreviewImage(initCover);

@@ -105,7 +105,7 @@ const Edit: React.FC<ArticleEditProps> = ({
           rules={[{ required: true, message: "请输入文章封面" }]}
         >
           <CardUpload
-            action="/file/upload"
+            action="/public/upload"
             fileMaxNum={1}
             uploadAction={uploadAction}
             initCover={detailInfo.cover}
