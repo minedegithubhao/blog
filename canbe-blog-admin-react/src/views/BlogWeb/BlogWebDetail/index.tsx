@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Divider } from "antd";
+import { Divider, Row, Col, Space, Card } from "antd";
 import styles from "./index.module.scss";
 import { getWebArticleByIdService } from "@/api/web/webArticle";
 import { useLocation } from "react-router-dom";
@@ -25,29 +25,44 @@ const BlogWebDetail: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className={styles.article}>
-        <div className={styles.articleHeader}>
-          <h1>{article.title}</h1>
-          <div className={styles.articleHeaderInfo}>
-            <div
-              style={{
-                fontSize: "13px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              浏览:{article.quantity}次
+    <Row>
+      <Col span={17}>
+        <div>
+          <div className={styles.article}>
+            <div className={styles.articleHeader}>
+              <h1>{article.title}</h1>
+              <div className={styles.articleHeaderInfo}>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  浏览:{article.quantity}次
+                </div>
+                <div>标签</div>
+              </div>
             </div>
-            <div>标签</div>
+            <Divider style={{ margin: "0 0" }} />
+            <div className={styles.articleContent}>
+              <MdPreview value={article.contentMd} />
+            </div>
           </div>
         </div>
-        <Divider style={{ margin: "0 0" }} />
-        <div className={styles.articleContent}>
-          <MdPreview value={article.contentMd} />
-        </div>
-      </div>
-    </div>
+      </Col>
+      <Col span={7}>
+        <Space
+          direction="vertical"
+          size="middle"
+          style={{ display: "flex", margin: `0 20px` }}
+        >
+          <Card hoverable>
+              <p>目录</p>
+            </Card>
+        </Space>
+      </Col>
+    </Row>
   );
 };
 

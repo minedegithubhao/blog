@@ -1,16 +1,14 @@
 import { Layout, Menu } from "antd";
 import React from "react";
 import useMenu from "@/hooks/menu";
+import useStore from "@/stores";
 
 const { Sider } = Layout;
 
-interface MainAsideProps {
-  isCollapse: boolean;
-}
-
-const MainAside: React.FC<MainAsideProps> = ({ isCollapse }) => {
+const MainAside: React.FC = () => {
 
   const { menuList, menuClick, openKeys, onOpenChange, currentRouter } = useMenu();
+  const { isCollapse } = useStore();
   
   return (
     <Sider collapsed={isCollapse}>

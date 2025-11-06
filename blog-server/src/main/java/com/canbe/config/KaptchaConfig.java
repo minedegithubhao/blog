@@ -31,8 +31,8 @@ public class KaptchaConfig {
         properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, "4");
         // 干扰线颜色
         properties.setProperty(Constants.KAPTCHA_NOISE_COLOR, "blue");
-        // 去除背景渐变
-        properties.setProperty(Constants.KAPTCHA_OBSCURIFICATOR_IMPL, "com.google.code.kaptcha.impl.ShadowGimpy");
+        // 使用简单文字渲染器，减少文字扭曲
+        properties.setProperty(Constants.KAPTCHA_OBSCURIFICATOR_IMPL, "com.google.code.kaptcha.impl.WaterRipple");
 
         Config config = new Config(properties);
         return config.getProducerImpl();

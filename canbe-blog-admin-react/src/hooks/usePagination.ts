@@ -34,6 +34,7 @@ export const usePagination = (props: UsePaginationProps = {}) => {
       showQuickJumper: true,
       defaultCurrent,
       defaultPageSize,
+      total: 0,
       current: defaultCurrent,
       pageSize: defaultPageSize,
     });

@@ -3,25 +3,20 @@ import { Layout, theme, Avatar, Button, Dropdown, message } from "antd";
 import type { MenuProps } from "antd";
 import logoImage from "@/assets/images/image.png";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { useDispatch } from "react-redux";
-import { changeCollapse } from "@/stores/reducers/tab";
 import { useNavigate } from "react-router-dom";
-import { removeToken } from "@/stores/reducers/token";
+import useStore from "@/stores";
 
 const { Header } = Layout;
 
-interface MainHeaderProps {
-  isCollapse: boolean;
-}
-
-const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
+const MainHeader: React.FC = () => {
   //这是Ant Design的自定义主题功能，从中提取出colorBgContainer（容器背景色）这个具体的样式变量
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
+  const { removeToken, changeCollapse, isCollapse } = useStore();
 
   const items: MenuProps["items"] = [
     {
@@ -46,7 +41,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
     // 退出登录
     if (e.key === "2") {
       navigate("/login");
-      dispatch(removeToken());
+      removeToken();
       message.success("退出成功");
     }
   };
@@ -55,8 +50,6 @@ const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
     items,
     onClick: handleMenuClick,
   };
-
-  
 
   return (
     <Header
@@ -71,7 +64,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ isCollapse }) => {
       <Button
         type="text"
         icon={isCollapse ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        onClick={() => dispatch(changeCollapse())}
+        onClick={changeCollapse}
         style={{
           fontSize: "24px",
           width: 64,

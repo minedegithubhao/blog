@@ -1,7 +1,6 @@
 import axios from "axios";
 import { message } from "antd";
-import store from "@/stores/index";
-import { removeToken } from "@/stores/reducers/token";
+import useTokenStore from "@/stores/token";
 
 // 创建axios实例
 const request = axios.create({
@@ -14,8 +13,8 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
-    // 在发送请求之前做什么
-    const token = store.getState().tokenStore.token;
+    // 每次请求时都从store中获取最新的token
+    const { token } = useTokenStore.getState();
     // 如果token中有值，在携带
     if (token && token.trim() !== "") {
       config.headers.Authorization = token;
@@ -42,12 +41,12 @@ request.interceptors.response.use(
     return Promise.reject(result.data);
   },
   (err) => {
-    alert(err);
     // 未登录
     if (err.response?.status === 401) {
       message.error("请先登录");
       // 清除token
-      store.dispatch(removeToken());
+      const { removeToken } = useTokenStore.getState();
+      removeToken();
       // 跳转到登录页面
       window.location.href = "/login";
     } else {

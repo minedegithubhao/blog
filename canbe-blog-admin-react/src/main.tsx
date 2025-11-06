@@ -12,9 +12,6 @@ import App from "./App.tsx";
 // 全局样式
 import "@/assets/styles/global.scss";
 
-import { Provider } from "react-redux";
-import store from "@/stores/index.ts";
-
 // 路由
 import { BrowserRouter } from "react-router-dom";
 
@@ -27,7 +24,6 @@ import zhCN from "antd/locale/zh_CN";
 
 createRoot(document.getElementById("root")!).render(
   // 使用toolkit 3.使用Provider包裹App组件
-  <Provider store={store}>
     <StrictMode>
       <ConfigProvider locale={zhCN}>
         <BrowserRouter>
@@ -35,5 +31,4 @@ createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
       </ConfigProvider>
     </StrictMode>
-  </Provider>
 );

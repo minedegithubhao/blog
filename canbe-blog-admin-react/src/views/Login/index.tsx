@@ -1,21 +1,17 @@
-import { useEffect, type ChangeEvent, useState } from "react";
+import { loginService } from "@/api/login";
+import useCaptcha from "@/hooks/useCaptcha";
+import useStore from "@/stores";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Input, Space, message } from "antd";
+import { useEffect, useState, type ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import initLoginBg from "./init";
-import { Input, Button, Space, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./login.less";
-import { loginService } from "@/api/login";
-import { useNavigate } from "react-router-dom";
-import classNames from "classnames";
-import _ from "lodash";
-import dayjs from "dayjs";
-import { useDispatch } from "react-redux";
-import { setToken } from "@/stores/reducers/token";
-import useCaptcha from "@/hooks/useCaptcha";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { token,setToken } = useStore();
 
   useEffect(() => {
     initLoginBg();
@@ -59,7 +55,7 @@ const Login: React.FC = () => {
       captcha,
       uuid: localStorage.getItem("uuid") as string,
     });
-    dispatch(setToken(result.data));
+    setToken(result.data as string);
     message.success(result.message);
     navigate("/home");
   };

@@ -1,5 +1,5 @@
 import routes from "@/router";
-import store from "@/stores/index";
+import useStore from "@/stores";
 import { Navigate, useLocation, useRoutes } from "react-router-dom";
 import { message } from "antd";
 /**
@@ -12,8 +12,9 @@ import { message } from "antd";
 const AuthRoute = () => {
   const location = useLocation();
   const outlet = useRoutes(routes);
-  const token = store.getState().tokenStore.token;
+  const { token } = useStore();
 
+  
   // web端不需要登录认证
   if (location.pathname.startsWith("/web")) {
     return outlet;
@@ -24,6 +25,7 @@ const AuthRoute = () => {
   }
   // 是/login，没有token，则跳转登录页
   if (location.pathname !== "/login" && !token) {
+    alert(token);
     message.warning("您还未登录,请先登录");
     return <Navigate to="/login" />;
   }

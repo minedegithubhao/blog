@@ -38,7 +38,6 @@ const Arcitle: React.FC = () => {
    * @param pagination 分页参数
    */
   const loadDataWithPagination = async (pagination: TablePaginationConfig) => {
-    console.log("queryForm.getFieldsValue()", queryForm.getFieldsValue());
     // 显示加载中...
     setLoading(true);
     // 构建查询参数

@@ -1,7 +1,8 @@
 import { getWebArtilePageService } from "@/api/web/webArticle";
 import { usePagination } from "@/hooks/usePagination";
 import { FORMAT_DATE, formateDateTime } from "@/utils/time";
-import { Card, Col, Divider, Image, Row, Space } from "antd";
+import type { PaginationProps } from "antd";
+import { Card, Col, Divider, Image, Pagination, Row, Space } from "antd";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
@@ -11,13 +12,14 @@ const space = 20;
 const BlogWebList: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { paginationParams } = usePagination();
+  const { paginationParams, setPaginationParams } = usePagination();
   const [articlePage, setArticlePage] = React.useState<SysArticle[]>([]);
 
   // 监听url变化，重新加载数据
   useEffect(() => {
     // 获取url参数
-    const categoryId = new URLSearchParams(location.search).get("categoryId") || "";
+    const categoryId =
+      new URLSearchParams(location.search).get("categoryId") || "";
     // 如果没有categoryId参数，不执行数据加载
     if (!categoryId) {
       return;
@@ -36,6 +38,12 @@ const BlogWebList: React.FC = () => {
     } as SysArticleQueryParams;
     const res = await getWebArtilePageService(queryParams);
     setArticlePage(res.data.records);
+
+    // 更新分页参数
+    setPaginationParams({
+      ...paginationParams,
+      total: res.data.total,
+    });
   };
 
   const onClick = (id: number) => {
@@ -43,6 +51,25 @@ const BlogWebList: React.FC = () => {
     urlParams.set("categoryId", urlParams.get("categoryId") + "");
     urlParams.set("id", id + "");
     navigate(`/web/detail?${urlParams.toString()}`);
+  };
+
+  // 分页功能
+  const onChange: PaginationProps["onChange"] = async (page, pageSize) => {
+    const categoryId = new URLSearchParams(location.search).get("categoryId") || "";
+    const queryParams = {
+      categoryId: categoryId,
+      pageNum: page,
+      pageSize: pageSize,
+    } as SysArticleQueryParams;
+    const res = await getWebArtilePageService(queryParams);
+    setArticlePage(res.data.records);
+    // 更新分页参数
+    setPaginationParams({
+      ...paginationParams,
+      current: page,
+      pageSize: pageSize,
+      total: res.data.total,
+    });
   };
 
   return (
@@ -83,12 +110,20 @@ const BlogWebList: React.FC = () => {
                     </div>
                   </div>
                   <div className={styles.rightInfo}>
-                    {/* <el-tag disable-transitions="true">{{ article.categoryName }}</el-tag> */}
+                    {/* <el-tag disable-transitions="true">{{ article.categoryName }}</el-tag> */ }
                   </div>
                 </div>
               </Card>
             ))}
           </Space>
+          <Pagination
+            align="center"
+            current={paginationParams.current}
+            pageSize={paginationParams.pageSize}
+            total={paginationParams.total}
+            onChange={onChange}
+            style={{ marginTop: "20px" }}
+          />
         </Col>
         <Col span={7}>
           <Space
@@ -96,15 +131,9 @@ const BlogWebList: React.FC = () => {
             size="middle"
             style={{ display: "flex", margin: `0 ${space}px` }}
           >
-            {/* <Card hoverable>
+            <Card hoverable>
               <p>个人信息</p>
-              <p>个人信息</p>
-              <p>个人信息</p>
-              <p>个人信息</p>
-              <p>个人信息</p>
-              <p>个人信息</p>
-              <p>个人信息</p>
-            </Card> */}
+            </Card>
           </Space>
         </Col>
       </Row>
