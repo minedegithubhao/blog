@@ -126,7 +126,7 @@ const BlogWebList: React.FC = () => {
           />
         </Col>
         <Col span={7}>
-          <Space
+          {/* <Space
             direction="vertical"
             size="middle"
             style={{ display: "flex", margin: `0 ${space}px` }}
@@ -134,7 +134,7 @@ const BlogWebList: React.FC = () => {
             <Card hoverable>
               <p>个人信息</p>
             </Card>
-          </Space>
+          </Space> */}
         </Col>
       </Row>
     </>

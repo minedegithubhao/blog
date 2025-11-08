@@ -53,6 +53,16 @@ public class Result<T> {
     /**
      * 快速返回操作失败响应结果
      *
+     * @param data 错误提示信息
+     * @return 失败响应结果
+     */
+    public static <E> Result<E> error(String errMsg, E data) {
+        return new Result<>(1, errMsg, data);
+    }
+
+    /**
+     * 快速返回操作失败响应结果
+     *
      * @param message 错误提示信息
      * @return 失败响应结果
      */

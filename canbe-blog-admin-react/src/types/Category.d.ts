@@ -1,4 +1,4 @@
-interface SysCategory {
+interface SysTag {
   id: number;
   name: string;
   sort: number;
@@ -6,8 +6,6 @@ interface SysCategory {
   updateTime: string;
 }
 
-interface SysCategoryQueryParams {
+interface SysCategoryQueryParams extends PageParams {
   name: string;
-  pageNum: number;
-  pageSize: number;
 }

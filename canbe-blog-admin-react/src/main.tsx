@@ -4,8 +4,6 @@ import { createRoot } from "react-dom/client";
     2、使用初始化样式。import 'reset-css'
     3、初始化样式一般放在最前面，确保其他UI框架样式、自定义样式能够正常覆盖。 
 */
-// 样式初始化
-import "reset-css";
 import App from "./App.tsx";
 // UI框架样式
 

@@ -1,5 +1,5 @@
 import { saveArticleService } from "@/api/article";
-import CardUpload from "@/components/Upload/CardUpload";
+import CardUpload from "@/components/Common/CardUpload";
 import type { UploadFile } from "antd";
 import { Form, Input, message, Modal, Radio } from "antd";
 import { MdEditor } from "md-editor-rt";
@@ -7,15 +7,15 @@ import "md-editor-rt/lib/style.css";
 import React, { useEffect } from "react";
 import CategorySelect from "@/views/Blog/Category/CategorySelect";
 
-interface ArticleEditProps {
+interface EditProps {
   isEditOpen: boolean;
-  changeEditOpen: (open: boolean) => void;
   editTitle: string;
+  changeEditOpen: (value: boolean) => void;
   detailInfo: SysArticle;
   reloadData: () => void;
 }
 
-const Edit: React.FC<ArticleEditProps> = ({
+const Edit: React.FC<EditProps> = ({
   isEditOpen,
   changeEditOpen,
   editTitle,
@@ -30,12 +30,12 @@ const Edit: React.FC<ArticleEditProps> = ({
     } else {
       editForm.resetFields();
     }
-  }, [editTitle, isEditOpen]);
+  }, [isEditOpen]);
 
   /**
    * 保存功能
    */
-  const handleOk = async () => {
+  const handleOk = async (): Promise<void> => {
     try {
       // 先进行表单校验
       const values = await editForm.validateFields();
@@ -48,7 +48,7 @@ const Edit: React.FC<ArticleEditProps> = ({
       changeEditOpen(false);
       // 刷新列表页面
       reloadData();
-    } catch (error: any) {
+    } catch (error) {
       console.log('error',error)
       // 校验失败或保存失败的处理
       message.error("表单校验失败，请输入必输内容");
@@ -119,12 +119,12 @@ const Edit: React.FC<ArticleEditProps> = ({
           <Input placeholder="请输入文章简介" />
         </Form.Item>
         <Form.Item label="文章分类" name="categoryId" rules={[{ required: true, message: "请选择文章分类" }]}>
-          <CategorySelect />
+          <CategorySelect placeholder="请选择文章分类"/>
         </Form.Item>
         <Form.Item label="状态" name="status">
           <Radio.Group>
-            <Radio value={1}>发布</Radio>
-            <Radio value={2}>草稿</Radio>
+            <Radio value={0}>发布</Radio>
+            <Radio value={1}>草稿</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item label="文章内容" name="contentMd" rules={[{ required: true, message: "请输入文章内容" }]}>

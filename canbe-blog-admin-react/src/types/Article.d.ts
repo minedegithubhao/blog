@@ -22,10 +22,8 @@ interface SysArticle {
   updateTime: string;
 }
 
-interface SysArticleQueryParams {
+interface SysArticleQueryParams extends PageParams {
   title: string;
   categoryId: string;
   tag: string;
-  pageNum: numbuer;
-  pageSize: numbuer;
 }

@@ -1,15 +1,12 @@
 import { deleteArticleService, getArtilePageService } from "@/api/article";
+import TableActions from "@/components/Common/TableActions";
 import { usePagination } from "@/hooks/usePagination";
-import {
-  getUserStateDisplay,
-  queryFormLayout,
-  tableCommonProps,
-} from "@/utils/common";
+import { getArticleStateDisplay, rowClassName } from "@/utils/common";
 import { FORMAT_DATE_TIME, formateDateTime } from "@/utils/time";
 import Edit from "@/views/Blog/Article/Edit";
 import CategorySelect from "@/views/Blog/Category/CategorySelect";
 import type { GetProp, TableProps } from "antd";
-import { Button, Divider, Form, Input, Popconfirm, Space, Table } from "antd";
+import { Button, Divider, Form, Input, Space, Table, message,Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import "./article.less";
 
@@ -49,7 +46,9 @@ const Arcitle: React.FC = () => {
       pageSize: pagination.pageSize || pagination.defaultPageSize,
     };
 
+    // 调用接口获取数据
     const result = await getArtilePageService(queryParams);
+    // 设置数据源
     setDataSource(result.data.records);
     // 修改分页参数
     setPaginationParams({
@@ -103,11 +102,19 @@ const Arcitle: React.FC = () => {
 
   /**
    * 删除功能
-   * @param id 文章id
+   * @param rowData 文章数据
    */
-  const handleDel = async (id: number) => {
-    await deleteArticleService(id);
+  const handleDel = async (rowData: SysArticle) => {
+    // 显示加载中...
+    setLoading(true);
+    // 调用接口删除数据
+    await deleteArticleService(rowData.id);
+    // 重新加载数据
     loadDataWithPagination(paginationParams);
+    // 提示删除成功
+    message.success("删除成功");
+    // 隐藏加载中...
+    setLoading(false);
   };
 
   /**
@@ -135,7 +142,7 @@ const Arcitle: React.FC = () => {
       title: "封面",
       dataIndex: "cover",
       width: 200,
-      align:"center",
+      align: "center",
       render: (cover: string) => (
         <div style={{ height: "50px" }}>
           <img
@@ -153,65 +160,57 @@ const Arcitle: React.FC = () => {
     {
       title: "标题",
       dataIndex: "title",
-      align:"center",
+      align: "center",
+      width: 300,
       ellipsis: true,
     },
     {
       title: "分类",
       dataIndex: "categoryName",
-      align:"center",
+      align: "center",
       width: 150,
     },
     {
       title: "作者",
       dataIndex: "userId",
-      align:"center",
+      align: "center",
       width: 150,
     },
     {
       title: "阅读量",
       dataIndex: "quantity",
-      align:"center",
-      width: 150,
+      align: "center",
+      width: 100,
     },
     {
       title: "创建时间",
       dataIndex: "createTime",
-      align:"center",
-      width: 250,
+      align: "center",
+      width: 150,
       render: (createTime: string) =>
         formateDateTime(createTime, FORMAT_DATE_TIME),
-      
     },
     {
       title: "状态",
       dataIndex: "status",
-      align:"center",
-      width: 150,
+      align: "center",
+      width: 100,
       render: (state: number) => {
-        return getUserStateDisplay(state);
+        const { text, color } = getArticleStateDisplay(state);
+        return <Tag color={color}>{text}</Tag>
       },
     },
     {
       title: "操作",
-      align:"center",
+      align: "center",
       width: 150,
       render: (rowData: SysArticle) => {
         return (
-          <Space>
-            <Button type="primary" onClick={() => handleEdit(rowData)}>
-              编辑
-            </Button>
-            <Popconfirm
-              title="提示"
-              description="请确认是否删除该记录？"
-              okText="是"
-              cancelText="否"
-              onConfirm={() => handleDel(rowData.id)}
-            >
-              <Button danger>删除</Button>
-            </Popconfirm>
-          </Space>
+          <TableActions
+            record={rowData}
+            onEdit={handleEdit}
+            onDelete={handleDel}
+          />
         );
       },
     },
@@ -220,7 +219,9 @@ const Arcitle: React.FC = () => {
   return (
     <div>
       <Form
-        {...queryFormLayout}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        layout="inline"
         form={queryForm}
         name="queryForm"
         onFinish={onFinish}
@@ -249,12 +250,12 @@ const Arcitle: React.FC = () => {
           新增
         </Button>
         <Table<SysArticle>
-          {...tableCommonProps}
           rowKey="id"
           loading={loading}
           dataSource={dataSource}
           pagination={paginationParams}
           onChange={handleTableChange}
+          rowClassName={rowClassName}
           columns={columns}
         />
       </Space>
@@ -262,7 +263,6 @@ const Arcitle: React.FC = () => {
         isEditOpen={isEditOpen}
         changeEditOpen={setIsEditOpen}
         editTitle={editTitle}
-        // articleDetail={JSON.parse(JSON.stringify(articleDetail))}
         detailInfo={detailInfo}
         reloadData={reloadData}
       />

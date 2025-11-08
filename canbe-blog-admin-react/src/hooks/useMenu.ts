@@ -1,4 +1,4 @@
-import { getMenuListService } from "@/api/menu";
+import { getMenuTreeService } from "@/api/menu";
 import * as Icon from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ export default function useMenu() {
   const [menuList, setMenuList] = useState<MenuItem[]>([]);
 
   const getMenuList = async () => {
-    const result = await getMenuListService();
+    const result = await getMenuTreeService();
     // 对 result.data 明确类型断言
     const data = result.data as MenuItem[];
     const menu = data.map((item) => {
@@ -32,6 +32,7 @@ export default function useMenu() {
           : undefined,
       };
     });
+
     setMenuList(menu);
   };
 

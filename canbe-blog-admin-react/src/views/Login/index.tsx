@@ -11,7 +11,7 @@ import "./login.less";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { token,setToken } = useStore();
+  const { setToken } = useStore();
 
   useEffect(() => {
     initLoginBg();

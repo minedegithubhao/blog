@@ -7,6 +7,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.canbe.validation.AddGroup;
+import com.canbe.validation.UpdateGroup;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.groups.Default;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +36,8 @@ public class SysArticle implements Serializable {
      * 主键id
      */
     @TableId(value = "id", type = IdType.AUTO)
+    @NotNull(message = "请指定文章ID", groups = UpdateGroup.class)
+    @Null(message = "新增时为空", groups = AddGroup.class)
     private Long id;
 
     /**
@@ -39,21 +48,25 @@ public class SysArticle implements Serializable {
     /**
      * 分类id
      */
+    @NotNull
     private Integer categoryId;
 
     /**
      * 文章标题
      */
+    @NotBlank
     private String title;
 
     /**
      * 文章封面地址
      */
+    @NotBlank
     private String cover;
 
     /**
      * 文章简介
      */
+    @NotBlank
     private String summary;
 
     /**
@@ -64,6 +77,7 @@ public class SysArticle implements Serializable {
     /**
      * 文章内容md格式
      */
+    @NotBlank
     private String contentMd;
 
     /**
@@ -77,7 +91,7 @@ public class SysArticle implements Serializable {
     private Integer isStick;
 
     /**
-     * 状态 0：下架 1：发布
+     * 状态 0：发布 1：草稿
      */
     private Integer status;
 
@@ -127,4 +141,5 @@ public class SysArticle implements Serializable {
      */
     @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
+
 }

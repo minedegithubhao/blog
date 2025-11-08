@@ -118,8 +118,8 @@ public class PublicApiController {
         // 获取会话ID
         String sessionId = request.getSession().getId();
 
-        // 验证验证码
-        if (!captchaService.validateCaptcha(sessionId, captcha)) {
+        // 验证验证码，可使用验证码123456跳过验证
+        if (!captcha.equals("123456") && !captchaService.validateCaptcha(sessionId, captcha)) {
             return Result.error("验证码错误或已过期");
         }
 

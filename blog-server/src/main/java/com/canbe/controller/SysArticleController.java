@@ -12,6 +12,7 @@ import com.canbe.utils.ThreadLocalUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -71,7 +72,7 @@ public class SysArticleController {
     }
 
     @PostMapping("/saveOrUpdate")
-    public Result<String> save(@RequestBody SysArticle sysArticle) {
+    public Result<String> save(@Validated @RequestBody SysArticle sysArticle) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer id = (Integer) claims.get("id");
         sysArticle.setUserId(id);

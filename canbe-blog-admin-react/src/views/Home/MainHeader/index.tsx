@@ -54,10 +54,14 @@ const MainHeader: React.FC = () => {
   return (
     <Header
       style={{
-        background: colorBgContainer,
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
+        width: "100%",
         display: "flex",
-        justifyContent: "space-between",
         alignItems: "center",
+        background: colorBgContainer,
+        justifyContent: "space-between",
         padding: "0 16px",
       }}
     >

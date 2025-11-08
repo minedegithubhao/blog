@@ -1,12 +1,12 @@
-import React from "react";
-import { Modal, Radio, Form, Input, message } from "antd";
 import { saveCategoryService } from "@/api/category";
+import { Form, Input, message, Modal } from "antd";
+import React from "react";
 
 interface EditProps {
   isEditOpen: boolean;
   editTitle: string;
   changeEditOpen: (value: boolean) => void;
-  detailInfo: SysCategory;
+  detailInfo: SysTag;
   reloadData: () => void;
 }
 const Edit: React.FC<EditProps> = ({
@@ -24,7 +24,7 @@ const Edit: React.FC<EditProps> = ({
       // 当是新增时，将表单清空
       editForm.resetFields();
     }
-  }, [editTitle, detailInfo]);
+  }, [isEditOpen]);
 
   const [editForm] = Form.useForm();
 
@@ -39,7 +39,7 @@ const Edit: React.FC<EditProps> = ({
       changeEditOpen(false);
       // 刷新列表页面
       reloadData();
-    } catch (error) {
+    } catch {
       // 表单校验失败
       message.error("表单校验失败，请输入必输内容");
     }

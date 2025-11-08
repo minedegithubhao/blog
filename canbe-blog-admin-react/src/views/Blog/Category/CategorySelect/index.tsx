@@ -2,27 +2,25 @@ import React, { useState, useEffect } from "react";
 import { categoryListService } from "@/api/category";
 import { Select } from "antd";
 import type { SelectProps } from "antd";
+type option = SelectProps["options"]
 
 interface CategorySelectProps {
   style?: React.CSSProperties;
   value?: number;
   onChange?: (value: number) => void;
-  required?: boolean;
+  placeholder?: string;
 }
 const CategorySelect: React.FC<CategorySelectProps> = ({
   style,
   value,
   onChange,
-  required = false,
+  placeholder,
 }) => {
-  const [categoryOptions, setCategoryOptions] = useState<
-    { value: number; label: string }[]
-  >([]);
+  const [categoryOptions, setCategoryOptions] = useState<option>([]);
 
   useEffect(() => {
     categoryList();
   }, []);
-
   const categoryList = async () => {
     const result = await categoryListService();
     setCategoryOptions(
@@ -34,7 +32,6 @@ const CategorySelect: React.FC<CategorySelectProps> = ({
   };
 
   const handleChange: SelectProps["onChange"] = (value) => {
-    console.log(value);
     onChange?.(value);
   };
 
@@ -42,7 +39,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({
     <Select
       style={style}
       options={categoryOptions}
-      placeholder={required && "请选择文章分类"}
+      placeholder={placeholder}
       value={value}
       onChange={handleChange}
     />

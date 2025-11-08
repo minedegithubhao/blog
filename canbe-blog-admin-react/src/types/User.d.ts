@@ -19,9 +19,7 @@ interface SysUser {
   signature: null;
 }
 
-type UserQueryParams = {
-  pageNum: number;
-  pageSize: number;
+interface UserQueryParams extends PageParams {
   username?: string;
   state?: string;
 };

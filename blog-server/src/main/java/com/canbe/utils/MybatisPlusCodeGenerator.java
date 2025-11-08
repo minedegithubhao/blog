@@ -42,7 +42,7 @@ public class MybatisPlusCodeGenerator {
 //                                        .pathInfo(Collections.singletonMap(OutputFile.xml, "D://"))
                 )
                 .strategyConfig(builder ->
-                                builder.addInclude("sys_category") // 设置需要生成的表名
+                                builder.addInclude("sys_dict_data") // 设置需要生成的表名
 //                                .addTablePrefix("t_", "c_") // 设置过滤表前缀
                                         // Entity策略配置
                                         .entityBuilder()

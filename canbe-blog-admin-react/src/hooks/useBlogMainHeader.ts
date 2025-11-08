@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 
 export default function useBlogMainHeader() {
   // 分类列表
-  const [categoryList, setCategoryList] = React.useState<SysCategory[]>([]);
+  const [categoryList, setCategoryList] = React.useState<SysTag[]>([]);
   // 分类列表
   const list = async () => {
     const result = await webCategoryListService();

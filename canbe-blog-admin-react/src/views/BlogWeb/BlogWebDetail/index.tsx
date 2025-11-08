@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Divider, Row, Col, Space, Card } from "antd";
-import styles from "./index.module.scss";
 import { getWebArticleByIdService } from "@/api/web/webArticle";
-import { useLocation } from "react-router-dom";
-import { MdPreview } from "md-editor-rt";
+import { Card, Col, Divider, Row, Space } from "antd";
+import { MdCatalog, MdPreview } from "md-editor-rt";
 import "md-editor-rt/lib/preview.css";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import styles from "./index.module.scss";
 
+const editorId = "my-editor";
 const BlogWebDetail: React.FC = () => {
   const location = useLocation();
   const [article, setArticle] = useState<SysArticle>({} as SysArticle);
@@ -18,6 +19,7 @@ const BlogWebDetail: React.FC = () => {
       getArticleById(parseInt(id));
     }
   }, [location]);
+
 
   const getArticleById = async (id: number) => {
     const result = await getWebArticleByIdService(id);
@@ -46,21 +48,32 @@ const BlogWebDetail: React.FC = () => {
             </div>
             <Divider style={{ margin: "0 0" }} />
             <div className={styles.articleContent}>
-              <MdPreview value={article.contentMd} />
+              <MdPreview
+                id={editorId}
+                value={article.contentMd}
+                previewTheme="smart-blue"
+              />
             </div>
           </div>
         </div>
       </Col>
       <Col span={7}>
-        <Space
-          direction="vertical"
-          size="middle"
-          style={{ display: "flex", margin: `0 20px` }}
-        >
-          <Card hoverable>
-              <p>目录</p>
+        <div style={{ position: "sticky", top: 0 }}>
+          <Space
+            direction="vertical"
+            size="middle"
+            style={{ display: "flex", margin: `0 20px` }}
+          >
+            <Card>
+              <h3>目录</h3>
+              <MdCatalog
+                editorId={editorId}
+                scrollElement={document.documentElement}
+                scrollElementOffsetTop={100}
+              />
             </Card>
-        </Space>
+          </Space>
+        </div>
       </Col>
     </Row>
   );

@@ -36,7 +36,6 @@ const CardUpload: React.FC<CardUploadProps> = ({
 
   // 处理初始值回显
   useEffect(() => {
-    console.log("initCover", initCover);
     if (initCover) {
       const file: UploadFile = {
         uid: "-1",

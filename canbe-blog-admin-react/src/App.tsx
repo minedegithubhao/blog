@@ -25,7 +25,6 @@ const AuthRoute = () => {
   }
   // 是/login，没有token，则跳转登录页
   if (location.pathname !== "/login" && !token) {
-    alert(token);
     message.warning("您还未登录,请先登录");
     return <Navigate to="/login" />;
   }

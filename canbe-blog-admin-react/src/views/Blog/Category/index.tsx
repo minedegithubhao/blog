@@ -1,18 +1,10 @@
 import { categoryPageService, deleteCategoryService } from "@/api/category";
+import TableActions from "@/components/Common/TableActions";
 import { usePagination } from "@/hooks/usePagination";
-import { queryFormLayout, tableCommonProps } from "@/utils/common";
+import { rowClassName } from "@/utils/common";
 import { FORMAT_DATE_TIME, formateDateTime } from "@/utils/time";
 import type { GetProp, TableProps } from "antd";
-import {
-  Button,
-  Divider,
-  Form,
-  Input,
-  Popconfirm,
-  Space,
-  Table,
-  message,
-} from "antd";
+import { Button, Divider, Form, Input, Space, Table, message } from "antd";
 import React, { useEffect, useState } from "react";
 import Edit from "./Edit";
 type TablePaginationConfig = Exclude<
@@ -23,11 +15,11 @@ type TablePaginationConfig = Exclude<
 const Category: React.FC = () => {
   const [queryForm] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<SysCategory[]>([]);
+  const [dataSource, setDataSource] = useState<SysTag[]>([]);
   const { paginationParams, setPaginationParams } = usePagination();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editTitle, setEditTitle] = useState<"Add" | "Edit">("Add");
-  const [detailInfo, setDetailInfo] = useState<SysCategory>({} as SysCategory);
+  const [detailInfo, setDetailInfo] = useState<SysTag>({} as SysTag);
 
   useEffect(() => {
     loadDataWithPagination(paginationParams);
@@ -87,14 +79,14 @@ const Category: React.FC = () => {
   const handleAdd = () => {
     setIsEditOpen(true);
     setEditTitle("Add");
-    setDetailInfo({} as SysCategory);
+    setDetailInfo({} as SysTag);
   };
 
   /**
    * 修改功能
    * @param rowData 分类数据
    */
-  const handleEdit = (rowData: SysCategory) => {
+  const handleEdit = (rowData: SysTag) => {
     setIsEditOpen(true);
     setEditTitle("Edit");
     setDetailInfo(rowData);
@@ -102,12 +94,19 @@ const Category: React.FC = () => {
 
   /**
    * 删除功能
-   * @param id 分类ID
+   * @param rowData 分类数据
    */
-  const handleDel = async (id: number) => {
-    await deleteCategoryService(id);
-    reloadData();
+  const handleDel = async (rowData: SysTag) => {
+    // 展示加载中
+    setLoading(true);
+    // 调用接口删除数据
+    await deleteCategoryService(rowData.id);
+    // 重新加载数据
+    loadDataWithPagination(paginationParams);
+    // 提示删除成功
     message.success("删除成功");
+    // 隐藏加载中
+    setLoading(false);
   };
 
   /**
@@ -117,54 +116,46 @@ const Category: React.FC = () => {
     loadDataWithPagination(paginationParams);
   };
 
-  const columns: TableProps<SysCategory>["columns"] = [
+  const columns: TableProps<SysTag>["columns"] = [
     {
       title: "分类名称",
       dataIndex: "name",
-      align:"center"
+      width: 250,
+      align: "center",
     },
     {
       title: "排序",
       dataIndex: "sort",
-      align:"center",
+      align: "center",
       width: 250,
     },
     {
       title: "创建时间",
       dataIndex: "createTime",
-      align:"center",
-      width: 250,
+      align: "center",
+      width: 150,
       render: (createTime: string) =>
         formateDateTime(createTime, FORMAT_DATE_TIME),
     },
     {
       title: "更新时间",
       dataIndex: "updateTime",
-      align:"center",
-      width: 250,
+      align: "center",
+      width: 150,
       render: (updateTime: string) =>
         formateDateTime(updateTime, FORMAT_DATE_TIME),
     },
     {
       title: "操作",
       width: 150,
-      align:"center",
-      render: (rowData: SysCategory) => {
+      align: "center",
+      render: (rowData: SysTag) => {
         return (
-          <Space>
-            <Button type="primary" onClick={() => handleEdit(rowData)}>
-              编辑
-            </Button>
-            <Popconfirm
-              title="提示"
-              description="请确认是否删除该记录？"
-              okText="是"
-              cancelText="否"
-              onConfirm={() => handleDel(rowData.id)}
-            >
-              <Button danger>删除</Button>
-            </Popconfirm>
-          </Space>
+          <TableActions
+            record={rowData}
+            onEdit={handleEdit}
+            onDelete={handleDel}
+          />
         );
       },
     },
@@ -173,7 +164,9 @@ const Category: React.FC = () => {
   return (
     <div>
       <Form
-        {...queryFormLayout}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        layout="inline"
         form={queryForm}
         name="queryForm"
         onFinish={onFinish}
@@ -195,14 +188,14 @@ const Category: React.FC = () => {
         <Button onClick={handleAdd} type="primary">
           新增
         </Button>
-        <Table<SysCategory>
-          {...tableCommonProps}
+        <Table<SysTag>
+          rowKey="id"
           loading={loading}
           dataSource={dataSource}
           pagination={paginationParams}
           onChange={handleTableChange}
+          rowClassName={rowClassName}
           columns={columns}
-          // rowSelection={{align:"center"}}
         />
       </Space>
       <Edit
