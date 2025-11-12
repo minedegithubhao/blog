@@ -24,16 +24,17 @@ const BlogWebList: React.FC = () => {
     if (!categoryId) {
       return;
     }
-    loadDataWithPagination(categoryId);
+    // 切换分类时，从第一页开始加载数据
+    loadDataWithPagination(categoryId, 1);
   }, [location]);
 
   /**
    * 加载分页数据
    */
-  const loadDataWithPagination = async (categoryId?: string) => {
+  const loadDataWithPagination = async (categoryId?: string, page?: number) => {
     const queryParams = {
       categoryId: categoryId,
-      pageNum: paginationParams.current,
+      pageNum: page ?? paginationParams.current,
       pageSize: paginationParams.pageSize,
     } as SysArticleQueryParams;
     const res = await getWebArtilePageService(queryParams);
@@ -42,6 +43,7 @@ const BlogWebList: React.FC = () => {
     // 更新分页参数
     setPaginationParams({
       ...paginationParams,
+      current: page ?? paginationParams.current,
       total: res.data.total,
     });
   };
@@ -102,8 +104,8 @@ const BlogWebList: React.FC = () => {
                 {/* 作者、浏览量、时间、分类 区域 */}
                 <div className={styles.postCardBottom}>
                   <div className={styles.leftInfo}>
-                    <div className="author">作者:{article.userId}</div>
-                    <div>浏览:{article.quantity}次</div>
+                    <div className="author">作者:{article.userNickName}</div>
+                    {/* <div>浏览:{article.quantity}次</div> */}
                     <div>
                       发布时间:
                       {formateDateTime(article.createTime, FORMAT_DATE)}

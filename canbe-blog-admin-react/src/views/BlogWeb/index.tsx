@@ -8,14 +8,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 const { Header, Content } = Layout;
 const space = 20;
 
-const headerStyle: React.CSSProperties = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  width: "100%",
-  alignItems: "center",
-};
-
 const BlogWeb: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -59,19 +51,19 @@ const BlogWeb: React.FC = () => {
     })),
     // 添加后台管理
     {
-      key: 'admin',
-      label: '后台管理',
-    }
+      key: "admin",
+      label: "后台管理",
+    },
   ];
 
   // 菜单点击
   const onClick: MenuProps["onClick"] = (e) => {
     // 跳转到后台管理
-    if (e.key === 'admin') {
-      navigate('/home');
+    if (e.key === "admin") {
+      navigate("/home");
       return;
     }
-    
+
     setSelectedKey(e.key);
     // 更新URL参数
     const searchParams = new URLSearchParams();

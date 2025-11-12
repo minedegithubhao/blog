@@ -18,9 +18,9 @@ public class SysArticleDto extends SysArticle {
      * 分类名称
      */
     private String categoryName;
-    
-    public void setCategoryId(Integer categoryId) {
-        // 修复类型不匹配问题
-        super.setCategoryId(categoryId);
-    }
+
+    /**
+     * 用户昵称
+     */
+    private String userNickName;
 }

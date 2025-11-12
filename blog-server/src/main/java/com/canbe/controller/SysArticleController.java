@@ -8,6 +8,7 @@ import com.canbe.pojo.SysArticle;
 import com.canbe.pojo.SysArticleDto;
 import com.canbe.service.SysArticleService;
 import com.canbe.service.SysCategoryService;
+import com.canbe.service.SysUserService;
 import com.canbe.utils.ThreadLocalUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.beanutils.BeanUtils;
@@ -36,6 +37,10 @@ public class SysArticleController {
     @Resource
     private SysCategoryService sysCategoryService;
 
+    @Resource
+    private SysUserService sysUserService;
+
+
     @GetMapping("/page")
     public Result<IPage<SysArticleDto>> page(@RequestParam(defaultValue = "1") Integer pageNum,
                                           @RequestParam(defaultValue = "10") Integer pageSize,
@@ -51,6 +56,8 @@ public class SysArticleController {
         }
         // 将分类转化为<key, value>形式
         Map<Integer, String> collect = sysCategoryService.categoryMap();
+        // 获取用户nickname
+        Map<Integer, String> userMap = sysUserService.userMap();
 
         IPage<SysArticle> sysArticlePage = sysArticleService.page(page,queryWrapper);
 
@@ -65,6 +72,8 @@ public class SysArticleController {
             }
             // 设置分类名称
             dto.setCategoryName(collect.getOrDefault(article.getCategoryId(), "未知"));
+            // 设置用户昵称
+            dto.setUserNickName(userMap.getOrDefault(article.getUserId(), "未知"));
             return dto;
         });
 

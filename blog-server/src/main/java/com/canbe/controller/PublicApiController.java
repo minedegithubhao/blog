@@ -64,6 +64,9 @@ public class PublicApiController {
     @Resource
     private SysCategoryService sysCategoryService;
 
+    @Resource
+    private SysArticleController sysArticleController;
+
     // 定义文件存储目录
     private static final String FILE_DIRECTORY = System.getProperty("user.dir") + "/blog-server/upload/";
 
@@ -251,35 +254,7 @@ public class PublicApiController {
     public Result<IPage<SysArticleDto>> page(@RequestParam(defaultValue = "1") Integer pageNum,
                                              @RequestParam(defaultValue = "10") Integer pageSize,
                                              SysArticle sysArticle) {
-        // 分页查询
-        Page<SysArticle> page = new Page<>(pageNum, pageSize);
-        LambdaQueryWrapper<SysArticle> queryWrapper = new LambdaQueryWrapper<>();
-        if (StringUtils.isNotEmpty(sysArticle.getTitle())) {
-            queryWrapper.like(SysArticle::getTitle, sysArticle.getTitle());
-        }
-        if (sysArticle.getCategoryId() != null) {
-            queryWrapper.eq(SysArticle::getCategoryId, sysArticle.getCategoryId());
-        }
-        // 将分类转化为<key, value>形式
-        Map<Integer, String> collect = sysCategoryService.categoryMap();
-
-        IPage<SysArticle> sysArticlePage = sysArticleService.page(page, queryWrapper);
-
-        // 将sysArticlePage转换为SysArticleDto分页对象
-        IPage<SysArticleDto> sysArticleDtoPage = sysArticlePage.convert(article -> {
-            SysArticleDto dto = new SysArticleDto();
-            // 拷贝所有属性
-            try {
-                BeanUtils.copyProperties(dto, article);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-            // 设置分类名称
-            dto.setCategoryName(collect.getOrDefault(article.getCategoryId(), "未知"));
-            return dto;
-        });
-
-        return Result.success(sysArticleDtoPage);
+        return sysArticleController.page(pageNum, pageSize, sysArticle);
     }
 
     @GetMapping("/sysArticle/get/{id}")

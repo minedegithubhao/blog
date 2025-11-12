@@ -20,6 +20,7 @@ interface SysArticle {
   aiDescribe: null;
   createTime: string;
   updateTime: string;
+  userNickName: string;
 }
 
 interface SysArticleQueryParams extends PageParams {
