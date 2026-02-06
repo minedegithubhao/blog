@@ -1,10 +1,12 @@
 package com.canbe.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.canbe.annotation.RequireRole;
 import com.canbe.pojo.Article;
 import com.canbe.pojo.Result;
 import com.canbe.service.ArticleService;
 import com.canbe.utils.ThreadLocalUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,7 @@ public class ArticleController {
      */
     @PostMapping
     public Result<String> add(@RequestBody @Validated Article article) {
-        Map<String, Object> claims = ThreadLocalUtil.get();
+        Claims claims = ThreadLocalUtil.get();
         Integer id = (Integer) claims.get("id");
         article.setCreateUser(id);
         articleService.save(article);

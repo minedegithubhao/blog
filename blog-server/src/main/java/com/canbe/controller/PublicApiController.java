@@ -132,7 +132,7 @@ public class PublicApiController {
         if (sysUser == null) {
             return Result.error("用户名不存在");
         }
-        // 密码错误则返回错误信息
+        // 密码错误则返回错误信息 aop
         String md5String = Md5Util.getMD5String(password);
         if (!sysUser.getPassword().equals(md5String)) {
             return Result.error("密码错误");
@@ -142,6 +142,7 @@ public class PublicApiController {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", sysUser.getId());
         claims.put("username", sysUser.getUsername());
+        claims.put("role", sysUser.getRole());
         String token = JwtUtil.genToken(claims);
         stringRedisTemplate.opsForValue().set(token, token, JwtUtil.EXPIRE_TIME, TimeUnit.MILLISECONDS);
         return Result.success(token);
@@ -254,7 +255,41 @@ public class PublicApiController {
     public Result<IPage<SysArticleDto>> page(@RequestParam(defaultValue = "1") Integer pageNum,
                                              @RequestParam(defaultValue = "10") Integer pageSize,
                                              SysArticle sysArticle) {
-        return sysArticleController.page(pageNum, pageSize, sysArticle);
+        // 分页查询
+        Page<SysArticle> page = new Page<>(pageNum , pageSize);
+        LambdaQueryWrapper<SysArticle> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotEmpty(sysArticle.getTitle())) {
+            queryWrapper.like(SysArticle::getTitle, sysArticle.getTitle());
+        }
+        if (sysArticle.getCategoryId() != null){
+            queryWrapper.eq(SysArticle::getCategoryId, sysArticle.getCategoryId());
+        }
+        queryWrapper.eq(SysArticle::getStatus, 0);
+        queryWrapper.orderByDesc(SysArticle::getCreateTime);
+        // 将分类转化为<key, value>形式
+        Map<Integer, String> collect = sysCategoryService.categoryMap();
+        // 获取用户nickname
+        Map<Integer, String> userMap = sysUserService.userMap();
+
+        IPage<SysArticle> sysArticlePage = sysArticleService.page(page,queryWrapper);
+
+        // 将sysArticlePage转换为SysArticleDto分页对象
+        IPage<SysArticleDto> sysArticleDtoPage = sysArticlePage.convert(article -> {
+            SysArticleDto dto = new SysArticleDto();
+            // 拷贝所有属性
+            try {
+                BeanUtils.copyProperties(dto, article);
+            } catch (IllegalAccessException|InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+            // 设置分类名称
+            dto.setCategoryName(collect.getOrDefault(article.getCategoryId(), "未知"));
+            // 设置用户昵称
+            dto.setUserNickName(userMap.getOrDefault(article.getUserId(), "未知"));
+            return dto;
+        });
+
+        return Result.success(sysArticleDtoPage);
     }
 
     @GetMapping("/sysArticle/get/{id}")

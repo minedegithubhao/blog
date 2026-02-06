@@ -3,6 +3,7 @@ package com.canbe.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.canbe.annotation.RequireRole;
 import com.canbe.pojo.Result;
 import com.canbe.pojo.SysArticle;
 import com.canbe.pojo.SysArticleDto;
@@ -10,6 +11,7 @@ import com.canbe.service.SysArticleService;
 import com.canbe.service.SysCategoryService;
 import com.canbe.service.SysUserService;
 import com.canbe.utils.ThreadLocalUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +56,7 @@ public class SysArticleController {
         if (sysArticle.getCategoryId() != null){
             queryWrapper.eq(SysArticle::getCategoryId, sysArticle.getCategoryId());
         }
+        queryWrapper.orderByDesc(SysArticle::getCreateTime);
         // 将分类转化为<key, value>形式
         Map<Integer, String> collect = sysCategoryService.categoryMap();
         // 获取用户nickname
@@ -81,8 +84,9 @@ public class SysArticleController {
     }
 
     @PostMapping("/saveOrUpdate")
+//    @RequireRole("admin")
     public Result<String> save(@Validated @RequestBody SysArticle sysArticle) {
-        Map<String, Object> claims = ThreadLocalUtil.get();
+        Claims claims = ThreadLocalUtil.get();
         Integer id = (Integer) claims.get("id");
         sysArticle.setUserId(id);
         return sysArticleService.saveOrUpdate(sysArticle) ? Result.success() : Result.error("保存文章失败");

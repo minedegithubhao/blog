@@ -2,6 +2,9 @@ package com.canbe.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
 import java.util.Map;
@@ -35,11 +38,28 @@ public class JwtUtil {
 	 * @return String 生成的JWT令牌 Generated JWT token
 	 */
     public static String genToken(Map<String, Object> claims) {
-        return JWT.create()
-                .withClaim("claims", claims)
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_TIME))
-                .sign(Algorithm.HMAC256(KEY));
+        return Jwts.builder()
+                .setClaims(claims) // 业务数据
+				.setIssuedAt(new Date()) // 签发时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_TIME)) // 过期时间
+                .signWith(SignatureAlgorithm.HS256, KEY) // 签名算法 + 密钥
+				.compact();
     }
+
+	/**
+	 * 验证 Token 是否有效
+	 * @param token Token字符串
+	 * @return true=有效，false=无效
+	 */
+	public static boolean validateToken(String token) {
+		try {
+			// 解析 Token，若签名错误/过期，会抛出异常
+			Jwts.parser().setSigningKey(KEY).parseClaimsJws(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 	/**
 	 * 接收token,验证token,并返回业务数据
@@ -48,12 +68,11 @@ public class JwtUtil {
 	 * @param token JWT令牌 JWT token
 	 * @return Map<String, Object> 业务数据 Business data
 	 */
-    public static Map<String, Object> parseToken(String token) {
-        return JWT.require(Algorithm.HMAC256(KEY))
-                .build()
-                .verify(token)
-                .getClaim("claims")
-                .asMap();
+    public static Claims parseToken(String token) {
+        return Jwts.parser()
+				.setSigningKey(KEY)
+				.parseClaimsJws(token)
+				.getBody();
     }
 
 }

@@ -50,7 +50,7 @@ request.interceptors.response.use(
       // 跳转到登录页面
       window.location.href = "/login";
     } else {
-      message.error("服务异常");
+      message.error(err.response.data.message? err.response.data.message : "服务异常");
       return Promise.reject(err); //异步的状态转化成失败的状态
     }
   }

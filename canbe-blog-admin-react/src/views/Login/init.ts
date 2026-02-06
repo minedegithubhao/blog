@@ -9,7 +9,7 @@ w = canvas.width = windowWidth,
 h = canvas.height = windowHeight,
 hue = 217,
 stars:IntStart[] = [],
-maxStars = 300;//星星数量
+maxStars = 1000;//星星数量
 let count = 0
 
 const canvas2 = document.createElement('canvas') ,

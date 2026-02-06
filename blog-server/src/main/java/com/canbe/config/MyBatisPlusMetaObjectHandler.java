@@ -2,6 +2,7 @@ package com.canbe.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.canbe.utils.ThreadLocalUtil;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class MyBatisPlusMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        Map<String, Object> claims = ThreadLocalUtil.get();
+        Claims claims = ThreadLocalUtil.get();
         Integer id = null;
         if (claims != null) {
             id = (Integer) claims.get("id");
@@ -26,7 +27,7 @@ public class MyBatisPlusMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        Map<String, Object> claims = ThreadLocalUtil.get();
+        Claims claims = ThreadLocalUtil.get();
         Integer id = null;
         if (claims != null) {
             id = (Integer) claims.get("id");

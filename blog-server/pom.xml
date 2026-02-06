@@ -136,6 +136,19 @@
       <version>1.9.4</version>
     </dependency>
 
+    <!-- JWT 依赖 -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+    <!-- 工具类 -->
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-all</artifactId>
+      <version>5.8.22</version>
+    </dependency>
+
   </dependencies>
 
   <build>

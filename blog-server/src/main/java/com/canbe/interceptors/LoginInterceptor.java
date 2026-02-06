@@ -1,15 +1,21 @@
 package com.canbe.interceptors;
 
+import com.canbe.annotation.RequireRole;
+import com.canbe.pojo.Result;
 import com.canbe.utils.JwtUtil;
 import com.canbe.utils.ThreadLocalUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -21,6 +27,8 @@ import java.util.Map;
  */
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
+
+    public static final String TOKEN_PREFIX = "Authorization";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -37,18 +45,56 @@ public class LoginInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
-        // get token from header - 从请求头中获取token
-        String token = request.getHeader("Authorization");
+
+        // 1. 跳过非控制器方法
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return true;
+        }
+        // 2、token验证 token verification
+        String token = request.getHeader(TOKEN_PREFIX);
+        if (!StringUtils.hasLength(token)) {
+            throw new RuntimeException("The request lacks a Token: " + request.getRequestURI());
+        }
         try {
             // get token from redis - 从Redis中获取token
             String tokenFromRedis = stringRedisTemplate.opsForValue().get(token);
             if (!StringUtils.hasLength(tokenFromRedis)){
-                // token not exist - token不存在
-                throw new RuntimeException("token not exist");
+                // token not exist
+                throw new RuntimeException("token not exist in redis");
             }
-            Map<String, Object> claims = JwtUtil.parseToken(token);
 
-            // save userInfo in ThreadLocal - 将用户信息保存到ThreadLocal中
+            // 3. 验证 Token 有效性，Token已过期或无效
+            if (!JwtUtil.validateToken(token)) {
+                throw new RuntimeException("The Token has expired or is invalid.");
+            }
+
+            // 4. 解析 Token，获取用户角色
+            Claims claims = JwtUtil.parseToken(token);
+            String userRole = claims.get("role", String.class);
+
+            // 5. 校验接口所需角色（通过自定义注解）
+            RequireRole requireRole = handlerMethod.getMethod().getAnnotation(RequireRole.class);
+            if (requireRole != null) {
+                String[] allowRoles = requireRole.value();
+                boolean hasPermission = false;
+                for (String role : allowRoles) {
+                    if (role.equals(userRole)) {
+                        hasPermission = true;
+                        break;
+                    }
+                }
+                if (!hasPermission) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json;charset=UTF-8");
+                    String jsonResponse = new ObjectMapper().writeValueAsString(
+                            new Result<>(HttpServletResponse.SC_FORBIDDEN, "无访问权限", null)
+                    );
+                    response.getWriter().write(jsonResponse);
+                    return false;
+                }
+            }
+
+            // 6、save userInfo in ThreadLocal - 将用户信息保存到ThreadLocal中
             ThreadLocalUtil.set(claims);
             return true;
         } catch (Exception e) {

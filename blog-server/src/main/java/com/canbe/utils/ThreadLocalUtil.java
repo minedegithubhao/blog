@@ -1,5 +1,7 @@
 package com.canbe.utils;
 
+import io.jsonwebtoken.Claims;
+
 import java.util.Map;
 
 /**
@@ -52,7 +54,7 @@ public class ThreadLocalUtil {
     }
 
     public static String getUsername() {
-        Map<String, Object> claims = get();
+        Claims claims = get();
         return (String) claims.get("username");
     }
 }

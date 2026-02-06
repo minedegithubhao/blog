@@ -101,6 +101,11 @@ public class SysUser implements Serializable {
     private String email;
 
     /**
+     * 角色
+     */
+    private String role;
+
+    /**
      * 性别
      */
     private Integer sex;

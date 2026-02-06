@@ -49,9 +49,23 @@ const Edit: React.FC<EditProps> = ({
       // 刷新列表页面
       reloadData();
     } catch (error) {
-      console.log('error',error)
-      // 校验失败或保存失败的处理
-      message.error("表单校验失败，请输入必输内容");
+      
+      // 从响应体中提取错误信息
+      let errorMessage = "保存失败";
+      
+      // 类型安全的错误处理
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // 检查是否包含业务错误码
+        const businessError = error as BusinessError;
+        if (businessError.code !== undefined && businessError.code !== 0 && businessError.message) {
+          errorMessage = businessError.message;
+        }
+      }
+      
+      // 显示具体错误信息
+      message.error(errorMessage);
     }
   };
 
@@ -136,3 +150,11 @@ const Edit: React.FC<EditProps> = ({
 };
 
 export default Edit;
+
+// 定义业务错误接口
+interface BusinessError extends Error {
+  code?: number;
+  data?: any;
+  response?: any;
+  status?: number;
+}

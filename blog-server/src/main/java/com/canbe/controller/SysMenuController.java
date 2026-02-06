@@ -35,7 +35,7 @@ public class SysMenuController {
     @RequestMapping("/getMenuTree")
     public Result getMenuList() {
         // 查询所有类型为MENU的菜单
-        List<SysMenu> menuList = sysMenuService.list(new QueryWrapper<SysMenu>().eq("type", "MENU"));
+        List<SysMenu> menuList = sysMenuService.list(new QueryWrapper<SysMenu>().eq("type", "MENU").eq("hidden",0));
 
         // 构建菜单树
         List<MenuTree> menuTreeList = buildMenuTree(menuList);
