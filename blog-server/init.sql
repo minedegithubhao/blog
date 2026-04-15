@@ -5,6 +5,7 @@ create database canbe_blog;
 alter database canbe_blog character set utf8mb4 collate utf8mb4_unicode_ci;
 -- 使用数据库
 use canbe_blog;
+set names utf8mb4;
 
 -- canbe_blog.article definition
 
@@ -191,8 +192,8 @@ CREATE TABLE `tag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='标签表';
 
 
-INSERT INTO canbe_blog.sys_article (user_id,category_id,title,cover,summary,content,content_md,read_type,is_stick,status,is_original,is_carousel,is_recommend,original_url,quantity,keywords,ai_describe,create_time,update_time) VALUES
-                                                                                                                                                                                                                                      (3,1,'资本抢滩区块链：泡沫还是技术？','301ab853-5119-44b4-9fb2-37f6271932e5.jpg','随着越来越多的上市公司将区块链作为转型的方向，具有区块链概念的上市公司持续增加。',NULL,'随着越来越多的上市公司将区块链作为转型的方向，具有区块链概念的上市公司持续增加。根据同花顺(42.920, -0.95, -2.17%)概念板块统计，截至6月13日，具有区块链概念的上市公司已达80家。
+INSERT INTO canbe_blog.sys_article (id,user_id,category_id,title,cover,summary,content,content_md,read_type,is_stick,status,is_original,is_carousel,is_recommend,original_url,quantity,keywords,ai_describe,create_time,update_time) VALUES
+                                                                                                                                                                                                                                          (9,3,1,'资本抢滩区块链：泡沫还是技术？','301ab853-5119-44b4-9fb2-37f6271932e5.jpg','随着越来越多的上市公司将区块链作为转型的方向，具有区块链概念的上市公司持续增加。',NULL,'随着越来越多的上市公司将区块链作为转型的方向，具有区块链概念的上市公司持续增加。根据同花顺(42.920, -0.95, -2.17%)概念板块统计，截至6月13日，具有区块链概念的上市公司已达80家。
 
 除了上市公司之外，各路资本也蜂拥进入区块链行业。据工信部信息中心发布的《2018中国区块链产业白皮书》数据显示，截至2018年涉及区块链公司股权投资事件数量为249起。从2016年开始，区块链领域的投资热度出现明显上升，投资事件达到60起，是2015年的五倍。2017年是近几年的区块链投资高峰期，投资事件数量接近100起。2018年第一季度，区块链领域的投资事件数量已达到68起。
 
@@ -241,7 +242,7 @@ Goopal Group发起人、神州数字（08255.HK）CEO孙茳涛在接受记者采
 中央财经大学金融法研究所所长黄震教授表示，区块链目前的风险来自于几个方面，第一是技术研发本身的实现有风险；第二是区块链的技术应用有经营风险；第三是政策风险；第四是舆情风险。
 
 针对这些风险，黄震表示：“在当前防风险成为第一要务的时候，必须要警惕我们并不能完全判断这些风险来源，在防风险的时候，可能更多的要借助一些新技术。区块链也是一种新技术，所以技术创新+制度创新+理性反思等不断的迭代，才可能防范这个风险。”',0,0,0,1,0,0,NULL,0,NULL,NULL,'2026-01-29 18:36:28','2026-01-29 19:46:28'),
-                                                                                                                                                                                                                                      (3,2,'使用Vagrant搭建本地集群','978f90a3-a1d2-41c7-8c43-529beea2738c.jpg','Vagrant 是一款用于构建和管理虚拟化开发环境的命令行工具，由 HashiCorp 公司开发，核心作用是让开发者快速搭建、复用、分发一致的虚拟机环境，解决「在我电脑上能跑，在你电脑上不行」的环境一致性问题。',NULL,'1. 下载&安装Vagrant
+                                                                                                                                                                                                                                      (10,3,2,'使用Vagrant搭建本地集群','978f90a3-a1d2-41c7-8c43-529beea2738c.jpg','Vagrant 是一款用于构建和管理虚拟化开发环境的命令行工具，由 HashiCorp 公司开发，核心作用是让开发者快速搭建、复用、分发一致的虚拟机环境，解决「在我电脑上能跑，在你电脑上不行」的环境一致性问题。',NULL,'1. 下载&安装Vagrant
 https://www.vagrantup.com/downloads.html Vagrant下载
 2. 验证Vagrant是否安装成功
 使用vagrant命令，如果出现如下内容，则证明已经安装成功
@@ -334,7 +335,7 @@ vagrant halt停止虚拟机
 ● vagrant box list列出所有虚拟机镜像
 ● vagrant box remove centos/stream9 --provider virtualbox移除虚拟机镜像centos/stream9是镜像名称--provider virtualbox要删除的是适用于 VirtualBox 的版本
 ● cp Vagrantfile Vagrantfile.bak备份虚拟机。',0,0,0,1,0,0,NULL,0,NULL,NULL,'2026-01-29 18:41:40',NULL),
-                                                                                                                                                                                                                                      (3,3,'费曼学习法','2f05d303-2f3a-4208-8843-216f2b7d95fa.jpg','只有被海马体判定为与生存相关得信息，就会很容易得通过海马体的“检查',NULL,'费曼学习法
+                                                                                                                                                                                                                                      (11,3,3,'费曼学习法','2f05d303-2f3a-4208-8843-216f2b7d95fa.jpg','只有被海马体判定为与生存相关得信息，就会很容易得通过海马体的“检查',NULL,'费曼学习法
 ● 第一步：假装把它（知识、概念）教给一个小孩子。
 你要把它教给一个8岁的孩子，他的词汇量和注意力刚好能够理解基本概念和关系，你会讲哪些，并写下来，使用复杂的词汇和行话来掩盖我们不明白的东西
 ● 第二步：回顾。
@@ -356,43 +357,43 @@ vagrant halt停止虚拟机
 睡前、醒后',0,0,0,1,0,0,NULL,0,NULL,NULL,'2026-01-29 19:33:10',NULL);
 
 
-INSERT INTO canbe_blog.sys_category (name,sort,create_time,update_time) VALUES
-                                                                            ('营销推广',1,'2026-01-29 18:35:44','2026-01-30 11:09:19'),
-                                                                            ('运维部署',2,'2026-01-29 18:39:28','2026-01-30 11:09:22'),
-                                                                            ('生活随笔',3,'2026-01-29 19:30:41',NULL);
+INSERT INTO canbe_blog.sys_category (id,name,sort,create_time,update_time) VALUES
+                                                                            (1,'营销推广',1,'2026-01-29 18:35:44','2026-01-30 11:09:19'),
+                                                                            (2,'运维部署',2,'2026-01-29 18:39:28','2026-01-30 11:09:22'),
+                                                                            (3,'生活随笔',3,'2026-01-29 19:30:41',NULL);
 
 
-INSERT INTO canbe_blog.sys_dict (name,`type`,status,remark,create_time,update_time,sort) VALUES
-                                                                                             ('性别','sex',1,NULL,'2026-01-29 19:06:59','2026-01-29 19:06:59',1),
-                                                                                             ('用户状态','status',1,NULL,'2026-01-29 19:08:47','2026-01-29 19:08:47',2),
-                                                                                             ('菜单类型','type',1,NULL,'2026-01-29 19:08:47','2026-01-29 19:08:47',3);
+INSERT INTO canbe_blog.sys_dict (id,name,`type`,status,remark,create_time,update_time,sort) VALUES
+                                                                                             (1,'性别','sex',1,NULL,'2026-01-29 19:06:59','2026-01-29 19:06:59',1),
+                                                                                             (2,'用户状态','status',1,NULL,'2026-01-29 19:08:47','2026-01-29 19:08:47',2),
+                                                                                             (3,'菜单类型','type',1,NULL,'2026-01-29 19:08:47','2026-01-29 19:08:47',3);
 
-INSERT INTO canbe_blog.sys_dict_data (dict_id,label,value,`style`,is_default,sort,remark,status) VALUES
-                                                                                                     (1,'男','0',NULL,'0',0,NULL,0),
-                                                                                                     (1,'女','1',NULL,'0',0,NULL,0),
-                                                                                                     (2,'禁用','0',NULL,'0',0,NULL,0),
-                                                                                                     (2,'正常','1',NULL,'0',0,NULL,0),
-                                                                                                     (3,'菜单','menu',NULL,'0',0,NULL,0),
-                                                                                                     (3,'按钮','button',NULL,'0',0,NULL,0);
+INSERT INTO canbe_blog.sys_dict_data (id,dict_id,label,value,`style`,is_default,sort,remark,status) VALUES
+                                                                                                     (1,1,'男','0',NULL,'0',0,NULL,0),
+                                                                                                     (2,1,'女','1',NULL,'0',0,NULL,0),
+                                                                                                     (3,2,'禁用','0',NULL,'0',0,NULL,0),
+                                                                                                     (4,2,'正常','1',NULL,'0',0,NULL,0),
+                                                                                                     (5,3,'菜单','menu',NULL,'0',0,NULL,0),
+                                                                                                     (6,3,'按钮','button',NULL,'0',0,NULL,0);
 
 
-INSERT INTO canbe_blog.sys_menu (parent_id,`path`,component,title,sort,icon,`type`,create_time,update_time,redirect,name,hidden,perm,is_external) VALUES
-                                                                                                                                                      (NULL,'/home','Index','系统管理',1,'AppstoreOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (1,'/system/user','User','用户管理',1,'UserOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (1,'/system/menu','Menu','菜单管理',2,'MenuOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (1,'/system/role','Role','角色管理',3,NULL,'menu','2026-01-29 18:19:37',NULL,NULL,NULL,1,NULL,NULL),
-                                                                                                                                                      (1,'/system/dict','Dict','字典管理',4,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (1,'/system/param','Param','参数管理',5,NULL,'menu',NULL,NULL,NULL,NULL,1,NULL,NULL),
-                                                                                                                                                      (1,'/system/file','File','文件管理',6,NULL,'menu',NULL,NULL,NULL,NULL,1,NULL,NULL),
-                                                                                                                                                      (11,'/blog/article','Article','文章管理',7,'LinkOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (11,'/blog/tag','Tag','标签管理',8,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (11,'/blog/category','Category','分类管理',9,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL);
-INSERT INTO canbe_blog.sys_menu (parent_id,`path`,component,title,sort,icon,`type`,create_time,update_time,redirect,name,hidden,perm,is_external) VALUES
-                                                                                                                                                      (NULL,'/blog',NULL,'博客管理',1,'FireOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (NULL,'/about',NULL,'关于我们',1,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                      (NULL,'/web','BlogWeb','前端页面',1,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL);
+INSERT INTO canbe_blog.sys_menu (id,parent_id,`path`,component,title,sort,icon,`type`,create_time,update_time,redirect,name,hidden,perm,is_external) VALUES
+                                                                                                                                                      (1,NULL,'/home','Index','系统管理',1,'AppstoreOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (2,1,'/system/user','User','用户管理',1,'UserOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (3,1,'/system/menu','Menu','菜单管理',2,'MenuOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (4,1,'/system/role','Role','角色管理',3,NULL,'menu','2026-01-29 18:19:37',NULL,NULL,NULL,1,NULL,NULL),
+                                                                                                                                                      (5,1,'/system/dict','Dict','字典管理',4,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (6,1,'/system/param','Param','参数管理',5,NULL,'menu',NULL,NULL,NULL,NULL,1,NULL,NULL),
+                                                                                                                                                      (7,1,'/system/file','File','文件管理',6,NULL,'menu',NULL,NULL,NULL,NULL,1,NULL,NULL),
+                                                                                                                                                      (8,11,'/blog/article','Article','文章管理',7,'LinkOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (9,11,'/blog/tag','Tag','标签管理',8,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (10,11,'/blog/category','Category','分类管理',9,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL);
+INSERT INTO canbe_blog.sys_menu (id,parent_id,`path`,component,title,sort,icon,`type`,create_time,update_time,redirect,name,hidden,perm,is_external) VALUES
+                                                                                                                                                      (11,NULL,'/blog',NULL,'博客管理',1,'FireOutlined','menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (12,NULL,'/about',NULL,'关于我们',1,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                      (13,NULL,'/web','BlogWeb','前端页面',1,NULL,'menu',NULL,NULL,NULL,NULL,0,NULL,NULL);
 
-INSERT INTO canbe_blog.sys_user (username,password,nickname,email,avatar,create_user,create_time,update_user,update_time,status,`role`,ip,ip_location,os,last_login_time,browser,mobile,sex,login_type,signature) VALUES
-                                                                                                                                                                                                                      ('admin','21232f297a57a5a743894a0e4a801fc3','admin','','',NULL,'2026-01-29 17:11:23',NULL,'2026-01-29 19:07:51',0,'admin',NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL),
-                                                                                                                                                                                                                      ('user','ee11cbb19052e40b07aac0ca060c23ee','','','',NULL,'2026-01-30 12:40:39',NULL,NULL,1,'user',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO canbe_blog.sys_user (id,username,password,nickname,email,avatar,create_user,create_time,update_user,update_time,status,`role`,ip,ip_location,os,last_login_time,browser,mobile,sex,login_type,signature) VALUES
+                                                                                                                                                                                                                      (3,'admin','21232f297a57a5a743894a0e4a801fc3','admin','','',NULL,'2026-01-29 17:11:23',NULL,'2026-01-29 19:07:51',1,'admin',NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL),
+                                                                                                                                                                                                                      (7,'user','ee11cbb19052e40b07aac0ca060c23ee','','','',NULL,'2026-01-30 12:40:39',NULL,NULL,1,'user',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 

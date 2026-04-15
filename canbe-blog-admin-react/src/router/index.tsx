@@ -10,13 +10,22 @@ import Article from "@/views/Blog/Article";
 import Tag from "@/views/Blog/Tag";
 import Category from "@/views/Blog/Category";
 import About from "@/views/About";
-import { Navigate } from "react-router-dom";
+import type { FC } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import NotFoundPage from "@/views/404";
 import Login from "@/views/Login";
 
 import BlogWeb from "@/views/BlogWeb";
-import BlogWebList from "@/views/BlogWeb/BlogWebList";
-import BlogWebDetail from "@/views/BlogWeb/BlogWebDetail";
+import AIHome from "@/views/BlogWeb/AIHome";
+import BlogSection from "@/views/BlogWeb/BlogSection";
+import BlogList from "@/views/BlogWeb/BlogSection/BlogList";
+import BlogDetail from "@/views/BlogWeb/BlogSection/BlogDetail";
+
+const LegacyWebRedirect: FC<{ to: string }> = ({ to }) => {
+  const location = useLocation();
+
+  return <Navigate to={{ pathname: to, search: location.search }} replace />;
+};
 
 const routes = [
   {
@@ -60,6 +69,10 @@ const routes = [
         element: <Article />,
       },
       {
+        path: "/blog",
+        element: <Navigate to="/blog/article" />,
+      },
+      {
         path: "/blog/tag",
         element: <Tag />,
       },
@@ -83,15 +96,33 @@ const routes = [
     children: [
       {
         index: true,
-        element: <Navigate to="/web/category" />,
+        element: <Navigate to="/web/ai" />,
       },
       {
-        path: "/web/category",
-        element: <BlogWebList />,
+        path: "ai",
+        element: <AIHome />,
       },
       {
-        path: "/web/detail",
-        element: <BlogWebDetail />,
+        path: "blog",
+        element: <BlogSection />,
+        children: [
+          {
+            index: true,
+            element: <BlogList />,
+          },
+          {
+            path: "detail",
+            element: <BlogDetail />,
+          },
+        ],
+      },
+      {
+        path: "category",
+        element: <LegacyWebRedirect to="/web/blog" />,
+      },
+      {
+        path: "detail",
+        element: <LegacyWebRedirect to="/web/blog/detail" />,
       },
     ],
   },
