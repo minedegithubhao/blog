@@ -12,5 +12,6 @@
 
   <modules>
     <module>blog-server</module>
+    <module>canbe_blog_server</module>
   </modules>
 </project>
