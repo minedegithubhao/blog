@@ -1,0 +1,73 @@
+<h2>Trace View：排查路径怎么组织</h2>
+<p class="subtitle">本轮确认单个 case 的 trace 页面结构</p>
+
+<div class="split section">
+  <div class="mockup" data-choice="pipeline-row" onclick="toggleSelect(this)">
+    <div class="mockup-header">A. Horizontal Pipeline</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;">
+        <div class="placeholder" style="height:72px;">Query</div>
+        <div class="placeholder" style="height:72px;">Retrieve</div>
+        <div class="placeholder" style="height:72px;">Rerank</div>
+        <div class="placeholder" style="height:72px;">Generate</div>
+        <div class="placeholder" style="height:72px;">Score</div>
+      </div>
+      <div class="placeholder" style="height:220px;">Selected Stage Details</div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="stage-timeline" onclick="toggleSelect(this)">
+    <div class="mockup-header">B. Stage Timeline + Evidence Panel</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:180px 1fr;gap:10px;">
+        <div>
+          <div class="placeholder" style="height:48px; margin-bottom:8px;">Input</div>
+          <div class="placeholder" style="height:48px; margin-bottom:8px;">Chunk Match</div>
+          <div class="placeholder" style="height:48px; margin-bottom:8px;">Recall</div>
+          <div class="placeholder" style="height:48px; margin-bottom:8px;">Rerank</div>
+          <div class="placeholder" style="height:48px; margin-bottom:8px;">Generation</div>
+          <div class="placeholder" style="height:48px;">Scoring</div>
+        </div>
+        <div>
+          <div class="placeholder" style="height:72px; margin-bottom:10px;">Case Summary + Failure Hypothesis</div>
+          <div class="placeholder" style="height:132px; margin-bottom:10px;">Evidence: retrieved chunks / scores / citations</div>
+          <div class="placeholder" style="height:92px;">Answer + metric judgement</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Stage Timeline + Evidence Panel</div>
+    <div class="mockup-body">
+      <ul>
+        <li>Trace View 的主要问题是定位责任阶段，而不是展示一条漂亮流水线。</li>
+        <li>左侧阶段列表能自然承载错误标记，例如 recall miss、rerank drop、generation hallucination。</li>
+        <li>右侧证据面板能保留足够空间展示 chunk、score、citation 和 answer 对比。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的收益</h4>
+      <ul>
+        <li>更适合工程排障</li>
+        <li>可以逐阶段挂载失败假设</li>
+        <li>移动端也更容易折叠成上下结构</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的代价</h4>
+      <ul>
+        <li>横向空间很快不够</li>
+        <li>复杂证据会挤到下方，读起来断裂</li>
+        <li>更像流程展示，不像排障工作台</li>
+      </ul>
+    </div>
+  </div>
+</div>

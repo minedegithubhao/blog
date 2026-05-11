@@ -1,0 +1,89 @@
+<h2>Pipeline 配置页：表单配置还是画布编排</h2>
+<p class="subtitle">本轮确认 RAG 策略配置页面的交互方式</p>
+
+<div class="cards">
+  <div class="card" data-choice="canvas" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Canvas Workflow</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+            <div class="placeholder" style="height:70px;">Ingest</div>
+            <div class="placeholder" style="height:70px;">Retrieve</div>
+            <div class="placeholder" style="height:70px;">Rerank</div>
+            <div class="placeholder" style="height:70px;">Generate</div>
+          </div>
+          <div class="placeholder" style="height:180px;">Node Canvas / Connections / Node Inspector</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. 画布编排</h3>
+      <p>看起来灵活，但会把产品推向通用工作流平台，配置边界会变重。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="sectioned-form" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Sectioned Form + Frozen Summary</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:180px 1fr 190px;gap:10px;">
+            <div>
+              <div class="placeholder" style="height:42px; margin-bottom:8px;">Build Strategy</div>
+              <div class="placeholder" style="height:42px; margin-bottom:8px;">Retrieval</div>
+              <div class="placeholder" style="height:42px; margin-bottom:8px;">Recall</div>
+              <div class="placeholder" style="height:42px; margin-bottom:8px;">Rerank</div>
+              <div class="placeholder" style="height:42px; margin-bottom:8px;">Prompt</div>
+              <div class="placeholder" style="height:42px;">Fallback</div>
+            </div>
+            <div class="placeholder" style="height:292px;">Typed controls: toggles, selects, sliders, thresholds, prompts</div>
+            <div>
+              <div class="placeholder" style="height:120px; margin-bottom:10px;">Version Summary</div>
+              <div class="placeholder" style="height:76px; margin-bottom:10px;">Diff From Base</div>
+              <div class="placeholder" style="height:76px;">Freeze Version</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 分区表单 + 冻结摘要</h3>
+      <p>按 RAG 阶段配置，每次 run 引用冻结版本，天然服务可复跑和可比较。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Sectioned Form + Frozen Summary</div>
+    <div class="mockup-body">
+      <ul>
+        <li>当前产品目标是比较 RAG 策略优劣，而不是开放任意 DAG 编排。</li>
+        <li>分区表单能把建库、检索、召回、重排、prompt、fallback 的参数清晰固定下来。</li>
+        <li>右侧冻结摘要让用户在保存前看到“这个 pipeline version 到底改了什么”。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的收益</h4>
+      <ul>
+        <li>版本语义清楚</li>
+        <li>更容易做 diff 和复跑</li>
+        <li>配置校验边界明确</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的代价</h4>
+      <ul>
+        <li>视觉上强，但实现和测试成本高</li>
+        <li>容易偏离 FAQ RAG 评估主线</li>
+        <li>版本冻结和参数 diff 会更复杂</li>
+      </ul>
+    </div>
+  </div>
+</div>

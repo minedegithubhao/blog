@@ -1,0 +1,10 @@
+server:
+  port: 18800
+
+blog:
+  file:
+    storage-path: /data/uploads
+
+canbe:
+  agent:
+    runtime-url: http://canbe-agents:18801/faq/chat

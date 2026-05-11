@@ -1,0 +1,64 @@
+﻿<h2>工程决策台：先行动，还是先证据</h2>
+<p class="subtitle">建议关注是否会诱导用户过早做 Promote / Hold</p>
+
+<div class="split section">
+  <div class="mockup" data-choice="action-first" onclick="toggleSelect(this)">
+    <div class="mockup-header">A. Action First</div>
+    <div class="mockup-body">
+      <div class="placeholder" style="height:74px; margin-bottom:10px;">Verdict + Recommendation</div>
+      <div class="placeholder" style="height:88px; margin-bottom:10px;">Action Strip: Promote / Hold / Follow-up</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="placeholder" style="height:110px;">Metric Deltas</div>
+        <div class="placeholder" style="height:110px;">Risk Summary</div>
+      </div>
+      <div class="placeholder" style="height:92px;">Regressed Cases</div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="evidence-first" onclick="toggleSelect(this)">
+    <div class="mockup-header">B. Evidence First</div>
+    <div class="mockup-body">
+      <div class="placeholder" style="height:74px; margin-bottom:10px;">Verdict + Recommendation</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="placeholder" style="height:110px;">Metric Deltas / Why</div>
+        <div class="placeholder" style="height:110px;">Risk Summary</div>
+      </div>
+      <div class="placeholder" style="height:92px; margin-bottom:10px;">High-risk Regressed Cases</div>
+      <div class="placeholder" style="height:70px;">Action Strip: Promote / Hold / Open Report</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Evidence First</div>
+    <div class="mockup-body">
+      <ul>
+        <li>判决系统和运营后台不同，最怕的是先点按钮、后补理解。</li>
+        <li>把高风险回归样例放在行动前，相当于先看“反例”，再做裁决。</li>
+        <li>这更符合一个严谨的决策顺序：结论 \(\rightarrow\) 证据 \(\rightarrow\) 风险 \(\rightarrow\) 动作。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的收益</h4>
+      <ul>
+        <li>减少拍脑袋 Promote 的概率</li>
+        <li>高风险 case 更自然地成为判断闸门</li>
+        <li>首页就建立“证据约束决策”的产品气质</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的风险</h4>
+      <ul>
+        <li>行动区太靠前，会暗示“先操作，后理解”</li>
+        <li>业务方可能跳过高风险 case</li>
+        <li>后续只能靠流程规范补救，产品本身没有强约束</li>
+      </ul>
+    </div>
+  </div>
+</div>

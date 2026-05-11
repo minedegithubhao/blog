@@ -1,0 +1,76 @@
+<h2>Comparison Detail：Case 下钻结构</h2>
+<p class="subtitle">本轮确认详情页默认把用户带到哪里</p>
+
+<div class="cards">
+  <div class="card" data-choice="single-table" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Single Case Table</div>
+        <div class="mockup-body">
+          <div class="placeholder" style="height:66px; margin-bottom:10px;">Verdict Summary</div>
+          <div class="placeholder" style="height:70px; margin-bottom:10px;">Filters: status / risk / label / metric delta</div>
+          <div class="placeholder" style="height:210px;">All Cases Table</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. 单大表</h3>
+      <p>所有 case 放进一个表，靠筛选器找到改进、退化和高风险退化。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="risk-buckets" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Risk-first Buckets</div>
+        <div class="mockup-body">
+          <div class="placeholder" style="height:66px; margin-bottom:10px;">Verdict Summary</div>
+          <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="placeholder" style="height:92px;">High-risk Regressions</div>
+            <div class="placeholder" style="height:92px;">Regressed</div>
+            <div class="placeholder" style="height:92px;">Improved</div>
+          </div>
+          <div class="placeholder" style="height:170px;">Selected Bucket Case Table + Trace Entry</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 风险优先分桶</h3>
+      <p>默认打开高风险退化，然后再看普通退化、改进、稳定样例。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Risk-first Buckets</div>
+    <div class="mockup-body">
+      <ul>
+        <li>Comparison 详情页的任务是解释 verdict，默认入口应该是最能改变决策的 case。</li>
+        <li>高风险退化是 promote 的闸门，应该一眼可见，而不是藏在筛选器后面。</li>
+        <li>单大表适合做完整审计，但不适合作为第一眼的判断路径。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的收益</h4>
+      <ul>
+        <li>高风险问题默认暴露</li>
+        <li>业务和工程都能快速看到 verdict 的反证</li>
+        <li>后续接 Trace View 更自然</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的代价</h4>
+      <ul>
+        <li>完整但不聚焦</li>
+        <li>用户需要知道怎么筛选才看得到关键问题</li>
+        <li>容易把判断页变成数据表页</li>
+      </ul>
+    </div>
+  </div>
+</div>

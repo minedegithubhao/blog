@@ -1,0 +1,12 @@
+.git
+.idea
+.vscode
+node_modules
+.next
+out
+dist
+logs
+*.log
+.env
+.env.*
+.superpowers

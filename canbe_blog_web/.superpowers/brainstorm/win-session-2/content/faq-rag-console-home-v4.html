@@ -1,0 +1,74 @@
+<h2>工程决策台：是否保留实验上下文侧栏</h2>
+<p class="subtitle">本轮确认首页布局密度：结论区更大，还是上下文更稳</p>
+
+<div class="split section">
+  <div class="mockup" data-choice="full-width" onclick="toggleSelect(this)">
+    <div class="mockup-header">A. Full-width Verdict Panel</div>
+    <div class="mockup-body">
+      <div class="placeholder" style="height:76px; margin-bottom:10px;">Verdict + Recommendation</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="placeholder" style="height:116px;">Metric Deltas</div>
+        <div class="placeholder" style="height:116px;">Risk Summary</div>
+      </div>
+      <div class="placeholder" style="height:104px; margin-bottom:10px;">High-risk Regressions</div>
+      <div class="placeholder" style="height:62px;">Actions</div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="context-rail" onclick="toggleSelect(this)">
+    <div class="mockup-header">B. Context Rail + Decision Panel</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:170px 1fr;gap:10px;">
+        <div>
+          <div class="placeholder" style="height:62px; margin-bottom:8px;">Dataset</div>
+          <div class="placeholder" style="height:62px; margin-bottom:8px;">Eval Set</div>
+          <div class="placeholder" style="height:62px; margin-bottom:8px;">Base Run</div>
+          <div class="placeholder" style="height:62px;">Target Run</div>
+        </div>
+        <div>
+          <div class="placeholder" style="height:72px; margin-bottom:10px;">Verdict + Recommendation</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="placeholder" style="height:108px;">Metric Deltas</div>
+            <div class="placeholder" style="height:108px;">Risk Summary</div>
+          </div>
+          <div class="placeholder" style="height:88px; margin-bottom:10px;">High-risk Regressions</div>
+          <div class="placeholder" style="height:54px;">Actions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Context Rail + Decision Panel</div>
+    <div class="mockup-body">
+      <ul>
+        <li>RAG 评估不是孤立分数，必须知道 base、target、dataset version、eval set 才能解释结果。</li>
+        <li>左侧上下文栏让用户在下钻 trace 或切换 comparison 时不丢失比较对象。</li>
+        <li>这里的侧栏不是导航，而是实验坐标系：它回答“这个 verdict 是在什么条件下成立”。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的收益</h4>
+      <ul>
+        <li>比较对象始终可见</li>
+        <li>适合后续加入 run 切换和 baseline 固定</li>
+        <li>对工程调试更友好</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的代价</h4>
+      <ul>
+        <li>视觉更宽，但判断上下文容易被折叠进标题</li>
+        <li>用户容易只看指标，不看实验条件</li>
+        <li>后续做 trace 跳转时上下文连续性弱</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+﻿<h2>canbe_faq_rag Console v1</h2>
+<p class="subtitle">低保真原型：先确认信息架构，而不是视觉风格</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Top Navigation</div>
+    <div class="mockup-body">
+      <div class="mock-nav">Comparisons | Runs | Datasets | Pipelines | Eval Sets | Risk Cases | Settings</div>
+    </div>
+  </div>
+</div>
+
+<div class="split section">
+  <div class="mockup" data-choice="home" onclick="toggleSelect(this)">
+    <div class="mockup-header">A. 首页 = Comparison Center</div>
+    <div class="mockup-body">
+      <div class="label">Verdict First</div>
+      <div class="placeholder" style="height:88px; margin-bottom:12px;">Verdict Card: beneficial / neutral / harmful</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
+        <div class="placeholder" style="height:72px;">Pass Rate Delta</div>
+        <div class="placeholder" style="height:72px;">Correctness Delta</div>
+        <div class="placeholder" style="height:72px;">Faithfulness Delta</div>
+      </div>
+      <div class="placeholder" style="height:70px; margin-bottom:12px;">Risk Summary</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="mock-button">Inspect Regressions</button>
+        <button class="mock-button">Open Report</button>
+        <button class="mock-button">Promote / Hold</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="ops" onclick="toggleSelect(this)">
+    <div class="mockup-header">B. 运营入口 = Runs / Assets</div>
+    <div class="mockup-body">
+      <div class="label">Execution And Materials</div>
+      <div class="placeholder" style="height:70px; margin-bottom:12px;">Recent Runs Table</div>
+      <div class="placeholder" style="height:62px; margin-bottom:12px;">Dataset / Pipeline / Eval Set Quick Access</div>
+      <div class="placeholder" style="height:112px;">Status Timeline / Queue / Drafts</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>这张图在确认什么</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>如果选 A 为首页主视图</h4>
+      <ul>
+        <li>产品重心是“这次改造是否值得推进”</li>
+        <li>业务和 QA 能更快读结论</li>
+        <li>工程视角通过 Runs 和 Trace 下钻</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>如果选 B 为首页主视图</h4>
+      <ul>
+        <li>更像实验执行台，而不是结论台</li>
+        <li>容易滑回旧项目“跑一次看一次”的习惯</li>
+        <li>比较结论会被埋到二级页面</li>
+      </ul>
+    </div>
+  </div>
+</div>

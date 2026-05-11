@@ -1,0 +1,60 @@
+<h2>canbe_faq_rag 控制台原型总览</h2>
+<p class="subtitle">已确认的产品骨架：以改造判决为中心，而不是以聊天或单次运行为中心</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Primary Workflow</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
+        <div class="placeholder" style="height:86px;">Configure Pipeline</div>
+        <div class="placeholder" style="height:86px;">Generate Eval Set</div>
+        <div class="placeholder" style="height:86px;">Run Experiment</div>
+        <div class="placeholder" style="height:86px;">Compare Runs</div>
+        <div class="placeholder" style="height:86px;">Trace Regressions</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Confirmed Page Decisions</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:10px;">
+        <div class="placeholder" style="height:54px;">Home</div>
+        <div class="placeholder" style="height:54px;">Decision Workbench, Evidence First, Context Rail</div>
+        <div class="placeholder" style="height:54px;">Comparison Detail</div>
+        <div class="placeholder" style="height:54px;">Risk-first Buckets, High-risk Regressions 默认打开</div>
+        <div class="placeholder" style="height:54px;">Trace View</div>
+        <div class="placeholder" style="height:54px;">Stage Timeline + Evidence Panel</div>
+        <div class="placeholder" style="height:54px;">Pipeline Config</div>
+        <div class="placeholder" style="height:54px;">Sectioned Form + Frozen Summary</div>
+        <div class="placeholder" style="height:54px;">Eval Set</div>
+        <div class="placeholder" style="height:54px;">Generation Workbench + Auditable Cases</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>保留下来的核心判断</h4>
+      <ul>
+        <li>首页先回答“改造是否值得推进”。</li>
+        <li>所有实验必须绑定 dataset version、pipeline version、eval set。</li>
+        <li>高风险退化是 promote 前必须查看的证据。</li>
+        <li>Pipeline 和 Eval Set 都保留可复跑、可审计的版本语义。</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>刻意不做的方向</h4>
+      <ul>
+        <li>不把在线聊天作为主入口。</li>
+        <li>不做通用 DAG 画布。</li>
+        <li>不把首页做成泛指标大盘。</li>
+        <li>不把 Eval Set 降级成普通 case 表格。</li>
+      </ul>
+    </div>
+  </div>
+</div>

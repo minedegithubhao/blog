@@ -1,0 +1,85 @@
+﻿<h2>首页细化：Dashboard 还是 Decision Workbench</h2>
+<p class="subtitle">建议看“主工作流是否被放在第一屏”</p>
+
+<div class="cards">
+  <div class="card" data-choice="dashboard" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. 管理驾驶舱 Dashboard</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;">
+            <div class="placeholder" style="height:58px;">Total Runs</div>
+            <div class="placeholder" style="height:58px;">Success Rate</div>
+            <div class="placeholder" style="height:58px;">Open Risks</div>
+            <div class="placeholder" style="height:58px;">Latest Verdict</div>
+          </div>
+          <div class="placeholder" style="height:110px; margin-bottom:10px;">Trend Chart</div>
+          <div class="placeholder" style="height:86px;">Recent Runs / Alerts</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Dashboard</h3>
+      <p>更像管理看板，适合扫全局，但真正的比较和决策要再点进去。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="workbench" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. 工程决策台 Decision Workbench</div>
+        <div class="mockup-body">
+          <div class="placeholder" style="height:78px; margin-bottom:10px;">Current Verdict + Recommendation</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="placeholder" style="height:120px;">Metric Deltas / Evidence</div>
+            <div class="placeholder" style="height:120px;">Risk Bucket</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="placeholder" style="height:82px;">Regressed Cases</div>
+            <div class="placeholder" style="height:82px;">Next Actions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Decision Workbench</h3>
+      <p>第一屏直接进入判断与行动，比较、风险、下钻入口都在当前视野内。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>建议</h3>
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Decision Workbench</div>
+    <div class="mockup-body">
+      <ul>
+        <li>`canbe_faq_rag` 的单位产出不是“一个 run”，而是“一个可判断的改造结论”。</li>
+        <li>如果首页先给趋势图和总量，用户会先读“发生了多少”，而不是“该不该推进”。</li>
+        <li>Decision Workbench 更像实验法里的判别面：先看 \(\Delta\) ，再看风险，再决定下一步。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>取舍</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的优势</h4>
+      <ul>
+        <li>更贴合工程与 QA 的实际闭环</li>
+        <li>首页到 Trace 的路径更短</li>
+        <li>结论和证据绑定，不容易被大盘指标稀释</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的代价</h4>
+      <ul>
+        <li>看上去“像平台”，但不一定更高效</li>
+        <li>容易演化成指标浏览器</li>
+        <li>决策动作被放进二级页，主叙事会变弱</li>
+      </ul>
+    </div>
+  </div>
+</div>

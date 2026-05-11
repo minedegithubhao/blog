@@ -1,0 +1,10 @@
+server:
+  port: 8800
+
+blog:
+  file:
+    storage-path: D:/IdeaProjects/blog/storage/uploads
+
+canbe:
+  agent:
+    runtime-url: http://127.0.0.1:8801/faq/chat

@@ -1,0 +1,66 @@
+<h2>Eval Set：普通列表还是生成向导</h2>
+<p class="subtitle">本轮确认 clean JSON 到测试案例的页面结构</p>
+
+<div class="split section">
+  <div class="mockup" data-choice="case-list" onclick="toggleSelect(this)">
+    <div class="mockup-header">A. Case List First</div>
+    <div class="mockup-body">
+      <div class="placeholder" style="height:68px; margin-bottom:10px;">Eval Set Header + Add Case</div>
+      <div class="placeholder" style="height:76px; margin-bottom:10px;">Filters: label / difficulty / enabled</div>
+      <div class="placeholder" style="height:230px;">Case Table</div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="generation-workbench" onclick="toggleSelect(this)">
+    <div class="mockup-header">B. Generation Workbench + Auditable Cases</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:10px;">
+        <div>
+          <div class="placeholder" style="height:58px; margin-bottom:8px;">1. Select Dataset Version</div>
+          <div class="placeholder" style="height:58px; margin-bottom:8px;">2. Choose Case Strategy</div>
+          <div class="placeholder" style="height:58px; margin-bottom:8px;">3. Preview Distribution</div>
+          <div class="placeholder" style="height:58px;">4. Generate Cases</div>
+        </div>
+        <div>
+          <div class="placeholder" style="height:74px; margin-bottom:10px;">Generation Summary: source, labels, difficulty, count</div>
+          <div class="placeholder" style="height:178px; margin-bottom:10px;">Auditable Case Table: query, expected, source ref, scoring profile</div>
+          <div class="placeholder" style="height:54px;">Actions: Edit / Disable / Run Evaluation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">我的建议：B. Generation Workbench + Auditable Cases</div>
+    <div class="mockup-body">
+      <ul>
+        <li>Eval Set 的关键价值不是存 case，而是把 clean JSON 变成可解释、可复用、可评估的 case。</li>
+        <li>生成向导能显式记录生成策略，例如标准问法、改写问法、错别字、越界问题、无答案问题。</li>
+        <li>可审计表能让人工修改 case，同时保留 source ref 和 scoring profile，后续 verdict 才有可信度。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>B 的收益</h4>
+      <ul>
+        <li>从数据到评估的链路完整</li>
+        <li>case 生成策略可复盘</li>
+        <li>一键 Run Evaluation 有明确入口</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>A 的代价</h4>
+      <ul>
+        <li>只像维护表格，不像生成评测集</li>
+        <li>case 来源和策略容易丢失</li>
+        <li>后续指标异常时难解释样例构成</li>
+      </ul>
+    </div>
+  </div>
+</div>

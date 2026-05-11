@@ -4,7 +4,7 @@ import type { PublicArticle } from "../types/public-article";
 import type { AgentChatRequest, AgentChatResponse, PublicAgent } from "../types/public-agent";
 import { getAuthHeaders } from "@/modules/auth/utils/auth-storage";
 
-const apiBaseUrl = process.env.BLOG_API_BASE_URL || "http://localhost:18080";
+const apiBaseUrl = process.env.BLOG_API_BASE_URL || "http://localhost:8800";
 
 async function parseResult<T>(response: Response): Promise<T> {
   const result = (await response.json()) as ApiResult<T>;

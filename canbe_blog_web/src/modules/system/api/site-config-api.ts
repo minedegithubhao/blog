@@ -2,7 +2,7 @@ import { getAuthHeaders } from "@/modules/auth/utils/auth-storage";
 import type { ApiResult } from "@/types/api";
 import type { SiteConfig, SiteConfigPayload } from "../types/site-config";
 
-const apiBaseUrl = process.env.BLOG_API_BASE_URL || "http://localhost:18080";
+const apiBaseUrl = process.env.BLOG_API_BASE_URL || "http://localhost:8800";
 
 async function parseResult<T>(response: Response): Promise<T> {
   const result = (await response.json()) as ApiResult<T>;

@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,21 +45,46 @@ public class AgentChatServiceImpl implements AgentChatService {
     private final UserAgentQuotaService userAgentQuotaService;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
+    private final String customAgentRuntimeUrlOverride;
 
+    @Autowired
     public AgentChatServiceImpl(
         AgentMapper agentMapper,
         AgentCallRecordMapper agentCallRecordMapper,
         UserAgentQuotaService userAgentQuotaService,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        @Value("${canbe.agent.runtime-url:}") String customAgentRuntimeUrlOverride
+    ) {
+        this(agentMapper, agentCallRecordMapper, userAgentQuotaService, objectMapper, HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .connectTimeout(Duration.ofSeconds(5))
+            .build(), customAgentRuntimeUrlOverride);
+    }
+
+    AgentChatServiceImpl(
+        AgentMapper agentMapper,
+        AgentCallRecordMapper agentCallRecordMapper,
+        UserAgentQuotaService userAgentQuotaService,
+        ObjectMapper objectMapper,
+        HttpClient httpClient
+    ) {
+        this(agentMapper, agentCallRecordMapper, userAgentQuotaService, objectMapper, httpClient, "");
+    }
+
+    AgentChatServiceImpl(
+        AgentMapper agentMapper,
+        AgentCallRecordMapper agentCallRecordMapper,
+        UserAgentQuotaService userAgentQuotaService,
+        ObjectMapper objectMapper,
+        HttpClient httpClient,
+        String customAgentRuntimeUrlOverride
     ) {
         this.agentMapper = agentMapper;
         this.agentCallRecordMapper = agentCallRecordMapper;
         this.userAgentQuotaService = userAgentQuotaService;
         this.objectMapper = objectMapper;
-        this.httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
+        this.httpClient = httpClient;
+        this.customAgentRuntimeUrlOverride = trim(customAgentRuntimeUrlOverride);
     }
 
     @Override
@@ -149,14 +176,19 @@ public class AgentChatServiceImpl implements AgentChatService {
         }
         String requestBody = objectMapper.writeValueAsString(requestDTO);
         return HttpRequest.newBuilder()
-            .uri(URI.create(agent.getRuntimeUrl()))
+            .uri(URI.create(customAgentRuntimeUrl(agent)))
             .timeout(Duration.ofSeconds(30))
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
             .build();
     }
 
+    private String customAgentRuntimeUrl(Agent agent) {
+        return customAgentRuntimeUrlOverride.isEmpty() ? trim(agent.getRuntimeUrl()) : customAgentRuntimeUrlOverride;
+    }
+
     private AgentChatVO parseAgentResponse(Agent agent, AgentChatRequestDTO requestDTO, String responseBody) throws Exception {
+        requireJsonResponseBody(responseBody);
         if (!PROVIDER_DIFY.equals(providerType(agent))) {
             return objectMapper.readValue(responseBody, AgentChatVO.class);
         }
@@ -174,6 +206,17 @@ public class AgentChatServiceImpl implements AgentChatService {
             vo.setSuggestedQuestions(root.get("suggested_questions"));
         }
         return vo;
+    }
+
+    private void requireJsonResponseBody(String responseBody) {
+        String body = trim(responseBody);
+        if (body.isEmpty()) {
+            throw new BusinessException(4004, "Agent服务返回空响应");
+        }
+        char first = body.charAt(0);
+        if (first != '{' && first != '[') {
+            throw new BusinessException(4004, "Agent服务返回非JSON响应，请检查Agent地址配置");
+        }
     }
 
     private void normalizeAgentAnswer(AgentChatVO chatVO) {
