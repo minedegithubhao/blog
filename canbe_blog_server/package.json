@@ -1,0 +1,8 @@
+{
+  "name": "canbe_blog_server-dev-runner",
+  "private": true,
+  "scripts": {
+    "dev": "mvn spring-boot:run -Dspring-boot.run.profiles=dev",
+    "dev:dev": "mvn spring-boot:run -Dspring-boot.run.profiles=dev"
+  }
+}

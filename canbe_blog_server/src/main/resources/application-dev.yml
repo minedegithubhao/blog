@@ -8,3 +8,4 @@ blog:
 canbe:
   agent:
     runtime-url: http://127.0.0.1:8801/faq/chat
+    evaluation-base-url: http://127.0.0.1:8801

@@ -8,3 +8,4 @@ blog:
 canbe:
   agent:
     runtime-url: http://canbe-agents:18801/faq/chat
+    evaluation-base-url: http://canbe-agents:18801

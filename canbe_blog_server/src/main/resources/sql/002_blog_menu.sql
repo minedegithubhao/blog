@@ -85,3 +85,21 @@ on duplicate key update
   visible = values(visible),
   status = values(status),
   is_deleted = 0;
+
+insert into blog_menu (
+  id, parent_id, name, title, path, component, icon, type, permission,
+  sort_order, visible, status
+) values
+  (404, 400, 'rag_evaluation', 'RAG评估', '/dashboard/rag-evaluation', 'dashboard/rag-evaluation/page', 'ScrollText', 'MENU', 'ragEvaluation:view', 44, 1, 1)
+on duplicate key update
+  parent_id = values(parent_id),
+  title = values(title),
+  path = values(path),
+  component = values(component),
+  icon = values(icon),
+  type = values(type),
+  permission = values(permission),
+  sort_order = values(sort_order),
+  visible = values(visible),
+  status = values(status),
+  is_deleted = 0;
