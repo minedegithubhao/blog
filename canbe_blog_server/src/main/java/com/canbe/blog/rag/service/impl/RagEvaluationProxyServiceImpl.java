@@ -64,6 +64,16 @@ public class RagEvaluationProxyServiceImpl implements RagEvaluationProxyService 
         }
     }
 
+    @Override
+    public JsonNode forwardDelete(String path) {
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(targetUrl(path, "")))
+            .timeout(Duration.ofSeconds(30))
+            .DELETE()
+            .build();
+        return send(request);
+    }
+
     private JsonNode send(HttpRequest request) {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
@@ -72,7 +82,7 @@ public class RagEvaluationProxyServiceImpl implements RagEvaluationProxyService 
             }
             String body = trim(response.body());
             if (body.isEmpty() || (body.charAt(0) != '{' && body.charAt(0) != '[')) {
-                throw new BusinessException(4004, "RAG评估服务返回非JSON响应，请检查canbe_agents地址配置");
+                throw new BusinessException(4004, "RAG评估服务返回非 JSON 响应，请检查 canbe_agents 地址配置");
             }
             return objectMapper.readTree(body);
         } catch (BusinessException exception) {

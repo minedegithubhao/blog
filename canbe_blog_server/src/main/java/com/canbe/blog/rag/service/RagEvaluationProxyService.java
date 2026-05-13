@@ -7,4 +7,6 @@ public interface RagEvaluationProxyService {
     JsonNode forwardGet(String path, String queryString);
 
     JsonNode forwardPost(String path, JsonNode body);
+
+    JsonNode forwardDelete(String path);
 }

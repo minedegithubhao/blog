@@ -1,44 +1,53 @@
 import type { ApiResult } from "@/types/api";
 import { getAuthHeaders } from "@/modules/auth/utils/auth-storage";
-import type { EvalRun, EvalRunResult, EvalSet, EvalSetGeneratePayload } from "./types";
+import type { EvalRun, EvalRunConfig, EvalRunResult, EvalSet, EvalSetDeleteResponse, EvalSetGeneratePayload, EvalSetGenerateResponse } from "./types";
 
 async function parseResult<T>(response: Response): Promise<T> {
-  const result = (await response.json()) as ApiResult<T>;
-  if (!response.ok || result.code !== 200) {
+  const result = (await response.json()) as ApiResult<T> | ({ code?: string; message?: string } & T);
+  if (!response.ok) {
+    const message = "message" in result && typeof result.message === "string" ? result.message : "请求失败";
+    throw new Error(message);
+  }
+  if ("code" in result && typeof result.code === "number" && result.code !== 200) {
     throw new Error(result.message || "请求失败");
   }
-  return result.data;
+  return "data" in result ? (result.data as T) : (result as T);
 }
 
-export async function listEvalSets(): Promise<EvalSet[]> {
-  const response = await fetch("/api/v1/rag-evaluation/eval-sets?limit=50", {
+export async function listEvalSets(params: { limit?: number; skip?: number } = {}): Promise<EvalSet[]> {
+  const searchParams = new URLSearchParams({
+    limit: String(params.limit ?? 200),
+    skip: String(params.skip ?? 0)
+  });
+  const response = await fetch(`/api/v1/rag-evaluation/eval-sets?${searchParams.toString()}`, {
     headers: getAuthHeaders()
   });
   const data = await parseResult<{ items: EvalSet[] }>(response);
   return data.items ?? [];
 }
 
-export async function generateEvalSet(payload: EvalSetGeneratePayload): Promise<{ eval_set_id: string; summary: Record<string, number> }> {
+export async function generateEvalSet(payload: EvalSetGeneratePayload): Promise<EvalSetGenerateResponse> {
   const response = await fetch("/api/v1/rag-evaluation/eval-sets/generate", {
     method: "POST",
     headers: getAuthHeaders(true),
     body: JSON.stringify(payload)
   });
-  return parseResult<{ eval_set_id: string; summary: Record<string, number> }>(response);
+  return parseResult<EvalSetGenerateResponse>(response);
 }
 
-export async function checkStale(evalSetId: string): Promise<{ summary: Record<string, number> }> {
-  const response = await fetch(`/api/v1/rag-evaluation/eval-sets/${encodeURIComponent(evalSetId)}/check-stale`, {
-    method: "POST",
+export async function deleteEvalSet(evalSetId: string): Promise<EvalSetDeleteResponse> {
+  const response = await fetch(`/api/v1/rag-evaluation/eval-sets/${encodeURIComponent(evalSetId)}`, {
+    method: "DELETE",
     headers: getAuthHeaders()
   });
-  return parseResult<{ summary: Record<string, number> }>(response);
+  return parseResult<EvalSetDeleteResponse>(response);
 }
 
-export async function startEvalRun(evalSetId: string): Promise<{ run_id: string; summary: EvalRun["summary"] }> {
+export async function startEvalRun(evalSetId: string, config: EvalRunConfig): Promise<{ run_id: string; summary: EvalRun["summary"] }> {
   const response = await fetch(`/api/v1/rag-evaluation/eval-sets/${encodeURIComponent(evalSetId)}/runs/start`, {
     method: "POST",
-    headers: getAuthHeaders()
+    headers: getAuthHeaders(true),
+    body: JSON.stringify(config)
   });
   return parseResult<{ run_id: string; summary: EvalRun["summary"] }>(response);
 }
@@ -51,8 +60,15 @@ export async function listEvalRuns(evalSetId: string): Promise<EvalRun[]> {
   return data.items ?? [];
 }
 
+export async function getEvalRun(runId: string): Promise<EvalRun> {
+  const response = await fetch(`/api/v1/rag-evaluation/eval-runs/${encodeURIComponent(runId)}`, {
+    headers: getAuthHeaders()
+  });
+  return parseResult<EvalRun>(response);
+}
+
 export async function listEvalRunResults(runId: string): Promise<EvalRunResult[]> {
-  const response = await fetch(`/api/v1/rag-evaluation/runs/${encodeURIComponent(runId)}/results?page=1&page_size=50`, {
+  const response = await fetch(`/api/v1/rag-evaluation/eval-runs/${encodeURIComponent(runId)}/results?page=1&page_size=100`, {
     headers: getAuthHeaders()
   });
   const data = await parseResult<{ items: EvalRunResult[] }>(response);

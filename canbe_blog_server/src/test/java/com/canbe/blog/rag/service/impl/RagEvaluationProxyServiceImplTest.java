@@ -52,6 +52,37 @@ class RagEvaluationProxyServiceImplTest {
     }
 
     @Test
+    void forwardsRunDetailToNewEvalRunsRoute() {
+        CapturingHttpClient httpClient = new CapturingHttpClient("{\"run_id\":\"run_1\"}");
+        RagEvaluationProxyServiceImpl service = new RagEvaluationProxyServiceImpl(
+            objectMapper,
+            httpClient,
+            "http://127.0.0.1:8801",
+            ""
+        );
+
+        service.forwardGet("/admin/eval-runs/run_1/results", "page=1&page_size=10");
+
+        assertEquals(URI.create("http://127.0.0.1:8801/admin/eval-runs/run_1/results?page=1&page_size=10"), httpClient.lastRequest.get().uri());
+    }
+
+    @Test
+    void forwardsDeleteEvalSetToAgents() {
+        CapturingHttpClient httpClient = new CapturingHttpClient("{\"ok\":true,\"eval_set_id\":\"eval_1\"}");
+        RagEvaluationProxyServiceImpl service = new RagEvaluationProxyServiceImpl(
+            objectMapper,
+            httpClient,
+            "http://127.0.0.1:8801",
+            ""
+        );
+
+        service.forwardDelete("/admin/eval-sets/eval_1");
+
+        assertEquals("DELETE", httpClient.lastRequest.get().method());
+        assertEquals(URI.create("http://127.0.0.1:8801/admin/eval-sets/eval_1"), httpClient.lastRequest.get().uri());
+    }
+
+    @Test
     void rejectsNonJsonAgentsResponse() {
         CapturingHttpClient httpClient = new CapturingHttpClient("<!doctype html>");
         RagEvaluationProxyServiceImpl service = new RagEvaluationProxyServiceImpl(
