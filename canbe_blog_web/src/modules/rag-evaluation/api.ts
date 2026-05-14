@@ -67,8 +67,12 @@ export async function getEvalRun(runId: string): Promise<EvalRun> {
   return parseResult<EvalRun>(response);
 }
 
-export async function listEvalRunResults(runId: string): Promise<EvalRunResult[]> {
-  const response = await fetch(`/api/v1/rag-evaluation/eval-runs/${encodeURIComponent(runId)}/results?page=1&page_size=100`, {
+export async function listEvalRunResults(runId: string, params: { page?: number; pageSize?: number } = {}): Promise<EvalRunResult[]> {
+  const searchParams = new URLSearchParams({
+    page: String(params.page ?? 1),
+    page_size: String(params.pageSize ?? 100)
+  });
+  const response = await fetch(`/api/v1/rag-evaluation/eval-runs/${encodeURIComponent(runId)}/results?${searchParams.toString()}`, {
     headers: getAuthHeaders()
   });
   const data = await parseResult<{ items: EvalRunResult[] }>(response);

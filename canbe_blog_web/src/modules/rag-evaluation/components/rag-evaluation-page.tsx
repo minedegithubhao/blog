@@ -86,7 +86,6 @@ type CaseCompareRow = {
 
 export function RagEvaluationPage() {
   const [evalSets, setEvalSets] = useState<EvalSet[]>([]);
-  const [latestRuns, setLatestRuns] = useState<Record<string, EvalRun | null>>({});
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState("");
   const [query, setQuery] = useState<EvalSetQuery>(EMPTY_QUERY);
@@ -152,7 +151,7 @@ export function RagEvaluationPage() {
 
   async function openRunDetail(run: EvalRun) {
     try {
-      const [runDetail, runResults] = await Promise.all([getEvalRun(run.run_id), listEvalRunResults(run.run_id)]);
+      const [runDetail, runResults] = await Promise.all([getEvalRun(run.run_id), listEvalRunResults(run.run_id, { page: 1, pageSize: 50 })]);
       setDetailRun(runDetail);
       setResults(runResults);
     } catch (error) {
@@ -195,34 +194,6 @@ export function RagEvaluationPage() {
   const safePage = Math.min(page, totalPages);
   const pagedEvalSets = filteredEvalSets.slice((safePage - 1) * pageSize, safePage * pageSize);
   const visiblePages = buildVisiblePages(safePage, totalPages);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadLatestRuns() {
-      const entries = await Promise.all(
-        pagedEvalSets.map(async (item) => {
-          try {
-            const nextRuns = await listEvalRuns(item.eval_set_id);
-            return [item.eval_set_id, nextRuns[0] ?? null] as const;
-          } catch {
-            return [item.eval_set_id, null] as const;
-          }
-        })
-      );
-      if (!cancelled) {
-        setLatestRuns((current) => ({ ...current, ...Object.fromEntries(entries) }));
-      }
-    }
-
-    if (pagedEvalSets.length > 0) {
-      void loadLatestRuns();
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pagedEvalSets]);
 
   return (
     <div className="min-w-0 max-w-full space-y-4">
@@ -298,10 +269,7 @@ export function RagEvaluationPage() {
                   </TableCell>
                   <TableCell className="text-center">{item.summary?.total ?? 0}</TableCell>
                   <TableCell className="text-center">
-                    <div className="space-y-1">
-                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100">{String((item as EvalSet & { status?: string }).status ?? "ready")}</Badge>
-                      {latestRuns[item.eval_set_id] ? <div className="text-xs text-muted-foreground">{formatLatestRunSummary(latestRuns[item.eval_set_id])}</div> : null}
-                    </div>
+                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100">{String((item as EvalSet & { status?: string }).status ?? "ready")}</Badge>
                   </TableCell>
                   <TableCell><div className="min-w-0 truncate">{item.created_by || "admin"}</div></TableCell>
                   <TableCell><div className="min-w-0 truncate" title={formatDate(item.created_at)}>{formatDate(item.created_at)}</div></TableCell>
@@ -449,7 +417,6 @@ function GenerateEvalSetDialog({ open, onOpenChange, onGenerated }: { open: bool
   const [step, setStep] = useState(1);
   const [name, setName] = useState("jd_help_eval_v1");
   const [totalCount, setTotalCount] = useState(100);
-  const [seed, setSeed] = useState(20260513);
   const [evalMode, setEvalMode] = useState<"single_chunk" | "multi_chunk" | "mixed">("mixed");
   const [evalTypeDist, setEvalTypeDist] = useState<Distribution>({ single_chunk: 0.7, multi_chunk: 0.3 });
   const [questionStyleDist, setQuestionStyleDist] = useState<Distribution>(QUESTION_STYLE_DEFAULTS);
@@ -468,7 +435,6 @@ function GenerateEvalSetDialog({ open, onOpenChange, onGenerated }: { open: bool
     const payload: EvalSetGeneratePayload = {
       name,
       total_count: totalCount,
-      seed,
       source_path: SOURCE_PATH,
       eval_type_distribution: finalEvalTypeDist,
       question_style_distribution: questionStyleDist,
@@ -497,10 +463,7 @@ function GenerateEvalSetDialog({ open, onOpenChange, onGenerated }: { open: bool
         {step === 1 ? (
           <div className="grid gap-4">
             <Field label="评估集名称" value={name} onChange={setName} />
-            <div className="grid grid-cols-2 gap-3">
-              <NumberField label="生成数量" value={totalCount} onChange={setTotalCount} />
-              <NumberField label="随机种子 Seed" value={seed} onChange={setSeed} />
-            </div>
+            <NumberField label="生成数量" value={totalCount} onChange={setTotalCount} />
             <ReadOnly label="数据源" value={SOURCE_PATH} />
             <ReadOnly label="数据源指纹" value="后端生成时自动计算 source_hash" />
           </div>
@@ -549,12 +512,19 @@ function GenerateEvalSetDialog({ open, onOpenChange, onGenerated }: { open: bool
 
 function EvalRunHistoryDialog({ evalSet, runs, open, onOpenChange, onOpenDetail, onOpenCompare }: { evalSet: EvalSet | null; runs: EvalRun[]; open: boolean; onOpenChange: (open: boolean) => void; onOpenDetail: (run: EvalRun) => void; onOpenCompare: (runs: EvalRun[]) => void }) {
   const [selectedRunIds, setSelectedRunIds] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     if (!open) {
       setSelectedRunIds([]);
+      setPage(1);
     }
   }, [open]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [evalSet?.eval_set_id]);
 
   function toggleRun(runId: string) {
     setSelectedRunIds((current) => {
@@ -575,9 +545,15 @@ function EvalRunHistoryDialog({ evalSet, runs, open, onOpenChange, onOpenDetail,
     }
   }
 
+  const total = runs.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pagedRuns = runs.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const visiblePages = buildVisiblePages(safePage, totalPages);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>评估记录：{evalSet?.name}</DialogTitle>
           <DialogDescription>同一个评估集可以多次运行，用于比较不同 RAG 配置下的检索表现。</DialogDescription>
@@ -606,7 +582,7 @@ function EvalRunHistoryDialog({ evalSet, runs, open, onOpenChange, onOpenDetail,
             </TableRow>
           </TableHeader>
           <TableBody>
-            {runs.map((run) => (
+            {pagedRuns.map((run) => (
               <TableRow key={run.run_id}>
                 <TableCell className="text-center">
                   <input
@@ -650,6 +626,56 @@ function EvalRunHistoryDialog({ evalSet, runs, open, onOpenChange, onOpenDetail,
             ) : null}
           </TableBody>
         </Table>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-sm text-muted-foreground">
+          <span>共 {total} 条运行记录</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={String(pageSize)}
+              onValueChange={(value) => {
+                setPageSize(Number(value));
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="w-[110px] cursor-pointer">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 50].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size} 条/页
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Pagination className="mx-0 w-auto justify-start">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className={classNames("cursor-pointer", safePage <= 1 && "pointer-events-none opacity-50")}
+                    onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  />
+                </PaginationItem>
+                {visiblePages.map((item, index) => (
+                  <PaginationItem key={item === "ellipsis" ? `run-history-ellipsis-${index}` : `run-history-page-${item}`}>
+                    {item === "ellipsis" ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink isActive={item === safePage} className="cursor-pointer" onClick={() => setPage(item)}>
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    className={classNames("cursor-pointer", safePage >= totalPages && "pointer-events-none opacity-50")}
+                    onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -695,18 +721,22 @@ function EvalRunCompareDialog({ runs, open, onOpenChange }: { runs: EvalRun[]; o
     };
   }, [open, left?.run_id, right?.run_id]);
 
+  const caseRows = useMemo(() => buildCaseCompareRows(leftResults, rightResults), [leftResults, rightResults]);
+  const caseSummary = useMemo(() => summarizeCaseDiffs(caseRows), [caseRows]);
+  const filteredCaseRows = useMemo(
+    () =>
+      caseRows.filter((row) => {
+        if (compareFilter === "all") return true;
+        if (compareFilter === "hit_changed") return row.left.metrics.hit_at_k !== row.right.metrics.hit_at_k;
+        if (compareFilter === "rank_changed") return Math.abs(row.left.metrics.mrr_at_k - row.right.metrics.mrr_at_k) > 0.000001;
+        return row.diffType === compareFilter;
+      }),
+    [caseRows, compareFilter]
+  );
+
   if (!left || !right) {
     return null;
   }
-
-  const caseRows = buildCaseCompareRows(leftResults, rightResults);
-  const caseSummary = summarizeCaseDiffs(caseRows);
-  const filteredCaseRows = caseRows.filter((row) => {
-    if (compareFilter === "all") return true;
-    if (compareFilter === "hit_changed") return row.left.metrics.hit_at_k !== row.right.metrics.hit_at_k;
-    if (compareFilter === "rank_changed") return Math.abs(row.left.metrics.mrr_at_k - row.right.metrics.mrr_at_k) > 0.000001;
-    return row.diffType === compareFilter;
-  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -1086,19 +1116,6 @@ function formatRunDuration(run: EvalRun) {
     return `已运行 ${formatDurationFromMs(elapsed)}`;
   }
   return "-";
-}
-
-function formatLatestRunSummary(run: EvalRun | null) {
-  if (!run) {
-    return "";
-  }
-  if (run.status === "running") {
-    return `最近运行：${formatProgress(run)}`;
-  }
-  if (run.status === "failed") {
-    return "最近运行失败";
-  }
-  return `最近 Hit@K ${formatPercent(run.summary.hit_at_k)}`;
 }
 
 function buildCompareRows(left: EvalRun, right: EvalRun) {

@@ -104,7 +104,6 @@ export type EvalRunResult = {
 export type EvalSetGeneratePayload = {
   name: string;
   total_count: number;
-  seed: number;
   source_path: string;
   eval_type_distribution: Distribution;
   question_style_distribution: Distribution;
