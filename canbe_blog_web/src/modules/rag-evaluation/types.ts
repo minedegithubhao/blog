@@ -24,13 +24,21 @@ export type EvalRunConfig = {
 
 export type EvalRunSummary = {
   total: number;
-  hit_at_k: number;
-  context_recall_at_k: number;
-  mrr_at_k: number;
-  precision_at_configured_k: number;
-  precision_at_effective_k: number;
-  avg_effective_k: number;
-  zero_context_rate: number;
+  recall_at_k?: number;
+  ndcg_at_k?: number;
+  filtered_precision?: number;
+  filtered_recall?: number;
+  filtered_avg_k?: number;
+  filtered_empty_context_rate?: number;
+  success_rate?: number;
+  error_count?: number;
+  hit_at_k?: number;
+  context_recall_at_k?: number;
+  mrr_at_k?: number;
+  precision_at_configured_k?: number;
+  precision_at_effective_k?: number;
+  avg_effective_k?: number;
+  zero_context_rate?: number;
 };
 
 export type EvalRunProgress = {
@@ -75,18 +83,28 @@ export type EvalRunDiagnostics = {
   effective_k: number;
   similarity_threshold: number;
   expected_chunk_ids: string[];
+  top_k_chunk_ids?: string[];
   retrieved_chunk_ids: string[];
   matched_chunk_ids: string[];
+  top_k_matched_chunk_ids?: string[];
   retrieved_contexts?: RetrievedContext[];
   failure_reasons?: string[];
 };
 
 export type EvalCaseMetrics = {
-  hit_at_k: number;
-  context_recall_at_k: number;
-  mrr_at_k: number;
-  precision_at_configured_k: number;
-  precision_at_effective_k: number;
+  recall_at_k?: number;
+  ndcg_at_k?: number;
+  filtered_precision?: number;
+  filtered_recall?: number;
+  filtered_avg_k?: number;
+  filtered_empty_context_rate?: number;
+  success_rate?: number;
+  error_count?: number;
+  hit_at_k?: number;
+  context_recall_at_k?: number;
+  mrr_at_k?: number;
+  precision_at_configured_k?: number;
+  precision_at_effective_k?: number;
 };
 
 export type EvalRunResult = {
