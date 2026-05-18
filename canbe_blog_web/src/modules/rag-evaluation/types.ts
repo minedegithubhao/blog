@@ -33,12 +33,7 @@ export type EvalRunSummary = {
   success_rate?: number;
   error_count?: number;
   hit_at_k?: number;
-  context_recall_at_k?: number;
-  mrr_at_k?: number;
   precision_at_configured_k?: number;
-  precision_at_effective_k?: number;
-  avg_effective_k?: number;
-  zero_context_rate?: number;
 };
 
 export type EvalRunProgress = {
@@ -101,10 +96,7 @@ export type EvalCaseMetrics = {
   success_rate?: number;
   error_count?: number;
   hit_at_k?: number;
-  context_recall_at_k?: number;
-  mrr_at_k?: number;
   precision_at_configured_k?: number;
-  precision_at_effective_k?: number;
 };
 
 export type EvalRunResult = {
