@@ -40,7 +40,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { deleteEvalSet, generateEvalSet, getEvalRun, listEvalRunResults, listEvalRuns, listEvalSets, startEvalRun } from "../api";
-import type { Distribution, EvalRun, EvalRunConfig, EvalRunResult, EvalSet, EvalSetGeneratePayload } from "../types";
+import type { Distribution, EvalCaseMetrics, EvalRun, EvalRunConfig, EvalRunResult, EvalRunSummary, EvalSet, EvalSetGeneratePayload } from "../types";
 
 const SOURCE_PATH = "exports/jd_help_faq.chunks.jsonl";
 const CATEGORY_DEFAULTS: Distribution = {
@@ -575,9 +575,9 @@ function EvalRunHistoryDialog({ evalSet, runs, open, onOpenChange, onOpenDetail,
                 <TableHead>时间</TableHead>
                 <TableHead>Hit@K</TableHead>
               <TableHead>Recall@K</TableHead>
-              <TableHead>MRR@K</TableHead>
-              <TableHead>P@CK</TableHead>
-              <TableHead>P@EK</TableHead>
+              <TableHead>nDCG@K</TableHead>
+              <TableHead>Filtered P</TableHead>
+              <TableHead>Errors</TableHead>
               <TableHead className="text-right">操作</TableHead>
             </TableRow>
           </TableHeader>
@@ -604,11 +604,11 @@ function EvalRunHistoryDialog({ evalSet, runs, open, onOpenChange, onOpenDetail,
                 </TableCell>
                 <TableCell>{formatRunDuration(run)}</TableCell>
                 <TableCell>{formatDate(run.created_at)}</TableCell>
-                <TableCell>{formatPercent(run.summary.hit_at_k)}</TableCell>
-                <TableCell>{formatPercent(run.summary.context_recall_at_k)}</TableCell>
-                <TableCell>{formatNumber(run.summary.mrr_at_k)}</TableCell>
-                <TableCell>{formatPercent(run.summary.precision_at_configured_k)}</TableCell>
-                <TableCell>{formatPercent(run.summary.precision_at_effective_k)}</TableCell>
+                <TableCell>{formatPercent(summaryHit(run.summary))}</TableCell>
+                <TableCell>{formatPercent(summaryRecall(run.summary))}</TableCell>
+                <TableCell>{formatNumber(summaryRank(run.summary))}</TableCell>
+                <TableCell>{formatPercent(summaryFilteredPrecision(run.summary))}</TableCell>
+                <TableCell>{formatCount(run.summary.error_count)}</TableCell>
                 <TableCell className="text-right">
                   <Button type="button" size="sm" variant="outline" onClick={() => onOpenDetail(run)} disabled={run.status === "running"}>
                     <Eye className="h-4 w-4" />
@@ -727,8 +727,8 @@ function EvalRunCompareDialog({ runs, open, onOpenChange }: { runs: EvalRun[]; o
     () =>
       caseRows.filter((row) => {
         if (compareFilter === "all") return true;
-        if (compareFilter === "hit_changed") return row.left.metrics.hit_at_k !== row.right.metrics.hit_at_k;
-        if (compareFilter === "rank_changed") return Math.abs(row.left.metrics.mrr_at_k - row.right.metrics.mrr_at_k) > 0.000001;
+        if (compareFilter === "hit_changed") return metricChanged(caseHit(row.left.metrics), caseHit(row.right.metrics));
+        if (compareFilter === "rank_changed") return metricChanged(caseRank(row.left.metrics), caseRank(row.right.metrics));
         return row.diffType === compareFilter;
       }),
     [caseRows, compareFilter]
@@ -818,10 +818,10 @@ function EvalRunCompareDialog({ runs, open, onOpenChange }: { runs: EvalRun[]; o
                     <TableCell className="whitespace-nowrap text-xs">{row.caseId}</TableCell>
                     <TableCell className="max-w-[260px] truncate" title={row.question}>{row.question}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      Hit {row.left.metrics.hit_at_k} | Recall {formatNumber(row.left.metrics.context_recall_at_k)} | MRR {formatNumber(row.left.metrics.mrr_at_k)}
+                      Hit {formatNumber(caseHit(row.left.metrics))} | Recall {formatNumber(caseRecall(row.left.metrics))} | {caseRankLabel(row.left.metrics)} {formatNumber(caseRank(row.left.metrics))}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      Hit {row.right.metrics.hit_at_k} | Recall {formatNumber(row.right.metrics.context_recall_at_k)} | MRR {formatNumber(row.right.metrics.mrr_at_k)}
+                      Hit {formatNumber(caseHit(row.right.metrics))} | Recall {formatNumber(caseRecall(row.right.metrics))} | {caseRankLabel(row.right.metrics)} {formatNumber(caseRank(row.right.metrics))}
                     </TableCell>
                     <TableCell><CaseDiffBadge diffType={row.diffType} /></TableCell>
                     <TableCell className="text-right">
@@ -860,20 +860,24 @@ function CaseCompareDetailDialog({ row, open, onOpenChange }: { row: CaseCompare
           <DialogDescription>{row.question}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3 md:grid-cols-3">
-          <MetricCard label="Hit@K" value={`${row.left.metrics.hit_at_k} → ${row.right.metrics.hit_at_k}`} />
-          <MetricCard label="Recall@K" value={`${formatNumber(row.left.metrics.context_recall_at_k)} → ${formatNumber(row.right.metrics.context_recall_at_k)}`} />
-          <MetricCard label="MRR@K" value={`${formatNumber(row.left.metrics.mrr_at_k)} → ${formatNumber(row.right.metrics.mrr_at_k)}`} />
+          <MetricCard label="Hit@K" value={`${formatNumber(caseHit(row.left.metrics))} → ${formatNumber(caseHit(row.right.metrics))}`} />
+          <MetricCard label="Recall@K" value={`${formatNumber(caseRecall(row.left.metrics))} → ${formatNumber(caseRecall(row.right.metrics))}`} />
+          <MetricCard label="nDCG@K" value={`${formatNumber(caseRank(row.left.metrics))} → ${formatNumber(caseRank(row.right.metrics))}`} />
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <Section title="Run A 诊断">
             failure_reasons: {(row.left.diagnostics.failure_reasons ?? []).join("、") || "-"}<br />
             expected_chunk_ids: {(row.left.diagnostics.expected_chunk_ids ?? []).join(", ") || "-"}<br />
+            top_k_chunk_ids: {(row.left.diagnostics.top_k_chunk_ids ?? []).join(", ") || "-"}<br />
+            top_k_matched_chunk_ids: {(row.left.diagnostics.top_k_matched_chunk_ids ?? []).join(", ") || "-"}<br />
             retrieved_chunk_ids: {(row.left.diagnostics.retrieved_chunk_ids ?? []).join(", ") || "-"}<br />
             matched_chunk_ids: {(row.left.diagnostics.matched_chunk_ids ?? []).join(", ") || "-"}
           </Section>
           <Section title="Run B 诊断">
             failure_reasons: {(row.right.diagnostics.failure_reasons ?? []).join("、") || "-"}<br />
             expected_chunk_ids: {(row.right.diagnostics.expected_chunk_ids ?? []).join(", ") || "-"}<br />
+            top_k_chunk_ids: {(row.right.diagnostics.top_k_chunk_ids ?? []).join(", ") || "-"}<br />
+            top_k_matched_chunk_ids: {(row.right.diagnostics.top_k_matched_chunk_ids ?? []).join(", ") || "-"}<br />
             retrieved_chunk_ids: {(row.right.diagnostics.retrieved_chunk_ids ?? []).join(", ") || "-"}<br />
             matched_chunk_ids: {(row.right.diagnostics.matched_chunk_ids ?? []).join(", ") || "-"}
           </Section>
@@ -903,8 +907,10 @@ function EvalRunDetailDialog({ run, results, open, onOpenChange, onOpenCase }: {
             ["all", "全部"],
             ["miss", "未命中"],
             ["low_recall", "低召回"],
+            ["filtered_low_recall", "过滤误杀"],
             ["low_rank", "低排序"],
             ["zero_effective_k", "Effective K=0"],
+            ["threshold_filtered", "阈值过滤"],
             ["too_many_noise_chunks", "噪声过多"]
           ].map(([value, label]) => (
             <Button key={value} type="button" size="sm" variant={filter === value ? "default" : "outline"} onClick={() => setFilter(value)}>
@@ -920,8 +926,8 @@ function EvalRunDetailDialog({ run, results, open, onOpenChange, onOpenCase }: {
               <TableHead>类型</TableHead>
               <TableHead>命中</TableHead>
               <TableHead>Recall</TableHead>
-              <TableHead>MRR</TableHead>
-              <TableHead>P@CK</TableHead>
+              <TableHead>nDCG</TableHead>
+              <TableHead>Filtered P</TableHead>
               <TableHead className="text-right">操作</TableHead>
             </TableRow>
           </TableHeader>
@@ -931,10 +937,10 @@ function EvalRunDetailDialog({ run, results, open, onOpenChange, onOpenCase }: {
                 <TableCell className="whitespace-nowrap text-xs">{item.case_id}</TableCell>
                 <TableCell className="max-w-[300px] truncate" title={item.question}>{item.question}</TableCell>
                 <TableCell><Badge variant="secondary">{item.eval_type}</Badge></TableCell>
-                <TableCell>{item.metrics.hit_at_k ? "是" : "否"}</TableCell>
-                <TableCell>{formatNumber(item.metrics.context_recall_at_k)}</TableCell>
-                <TableCell>{formatNumber(item.metrics.mrr_at_k)}</TableCell>
-                <TableCell>{formatNumber(item.metrics.precision_at_configured_k)}</TableCell>
+                <TableCell>{caseHit(item.metrics) ? "是" : "否"}</TableCell>
+                <TableCell>{formatNumber(caseRecall(item.metrics))}</TableCell>
+                <TableCell>{formatNumber(caseRank(item.metrics))}</TableCell>
+                <TableCell>{formatNumber(caseFilteredPrecision(item.metrics))}</TableCell>
                 <TableCell className="text-right">
                   <Button type="button" size="sm" variant="outline" onClick={() => onOpenCase(item)}>
                     查看
@@ -967,15 +973,17 @@ function CaseDiagnosticsDrawer({ result, open, onOpenChange }: { result: EvalRun
               category: {result.category}
             </Section>
             <Section title="本 Case 指标">
-              Hit@K: {result.metrics.hit_at_k}<br />
-              Context Recall@K: {formatNumber(result.metrics.context_recall_at_k)}<br />
-              MRR@K: {formatNumber(result.metrics.mrr_at_k)}<br />
-              Precision@ConfiguredK: {formatNumber(result.metrics.precision_at_configured_k)}<br />
-              Precision@EffectiveK: {formatNumber(result.metrics.precision_at_effective_k)}
+              Hit@K: {formatNumber(caseHit(result.metrics))}<br />
+              Recall@K: {formatNumber(caseRecall(result.metrics))}<br />
+              {caseRankLabel(result.metrics)}: {formatNumber(caseRank(result.metrics))}<br />
+              Filtered Precision: {formatNumber(caseFilteredPrecision(result.metrics))}<br />
+              Filtered Recall: {formatNumber(caseFilteredRecall(result.metrics))}<br />
+              Error Count: {formatCount(result.metrics.error_count)}
             </Section>
             <ChunkList title="期望召回 chunks" ids={result.diagnostics.expected_chunk_ids} />
+            <ChunkList title="过滤前 Top-K chunks" ids={result.diagnostics.top_k_chunk_ids ?? result.diagnostics.retrieved_chunk_ids} />
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold">实际召回 chunks</h3>
+              <h3 className="text-sm font-semibold">过滤后 contexts</h3>
               {(result.diagnostics.retrieved_contexts ?? []).map((item, index) => (
                 <div key={`${item.chunk_id}-${index}`} className="rounded-lg border p-3 text-sm">
                   <div className="font-medium">{index + 1}. {item.chunk_id} score={formatNumber(item.score)} {item.matched ? "命中" : "未命中"}</div>
@@ -994,13 +1002,15 @@ function CaseDiagnosticsDrawer({ result, open, onOpenChange }: { result: EvalRun
 function SummaryGrid({ run }: { run: EvalRun }) {
   return (
     <div className="grid gap-3 md:grid-cols-4">
-      <MetricCard label="Hit@K" value={formatPercent(run.summary.hit_at_k)} />
-      <MetricCard label="Context Recall@K" value={formatPercent(run.summary.context_recall_at_k)} />
-      <MetricCard label="MRR@K" value={formatNumber(run.summary.mrr_at_k)} />
-      <MetricCard label="Precision@CK" value={formatPercent(run.summary.precision_at_configured_k)} />
-      <MetricCard label="Precision@EK" value={formatPercent(run.summary.precision_at_effective_k)} />
-      <MetricCard label="Avg EffectiveK" value={formatNumber(run.summary.avg_effective_k)} />
-      <MetricCard label="Zero Context Rate" value={formatPercent(run.summary.zero_context_rate)} />
+      <MetricCard label="Success Rate" value={formatPercent(summarySuccessRate(run.summary))} />
+      <MetricCard label="Hit@K" value={formatPercent(summaryHit(run.summary))} />
+      <MetricCard label="Recall@K" value={formatPercent(summaryRecall(run.summary))} />
+      <MetricCard label={summaryRankLabel(run.summary)} value={formatNumber(summaryRank(run.summary))} />
+      <MetricCard label="Filtered Precision" value={formatPercent(summaryFilteredPrecision(run.summary))} />
+      <MetricCard label="Filtered Recall" value={formatPercent(summaryFilteredRecall(run.summary))} />
+      <MetricCard label="Filtered Avg K" value={formatNumber(summaryFilteredAvgK(run.summary))} />
+      <MetricCard label="Empty Context Rate" value={formatPercent(summaryEmptyContextRate(run.summary))} />
+      <MetricCard label="Errors" value={formatCount(run.summary.error_count)} />
     </div>
   );
 }
@@ -1118,17 +1128,92 @@ function formatRunDuration(run: EvalRun) {
   return "-";
 }
 
+function summaryRecall(summary: EvalRunSummary) {
+  return firstNumber(summary.recall_at_k, summary.context_recall_at_k);
+}
+
+function summaryRank(summary: EvalRunSummary) {
+  return firstNumber(summary.ndcg_at_k, summary.mrr_at_k);
+}
+
+function summaryRankLabel(summary: EvalRunSummary) {
+  return summary.ndcg_at_k == null && summary.mrr_at_k != null ? "MRR@K" : "nDCG@K";
+}
+
+function summaryFilteredPrecision(summary: EvalRunSummary) {
+  return firstNumber(summary.filtered_precision, summary.precision_at_effective_k, summary.precision_at_configured_k);
+}
+
+function summaryFilteredRecall(summary: EvalRunSummary) {
+  return firstNumber(summary.filtered_recall, summary.context_recall_at_k);
+}
+
+function summaryFilteredAvgK(summary: EvalRunSummary) {
+  return firstNumber(summary.filtered_avg_k, summary.avg_effective_k);
+}
+
+function summaryEmptyContextRate(summary: EvalRunSummary) {
+  return firstNumber(summary.filtered_empty_context_rate, summary.zero_context_rate);
+}
+
+function summarySuccessRate(summary: EvalRunSummary) {
+  return firstNumber(summary.success_rate);
+}
+
+function summaryHit(summary: EvalRunSummary) {
+  return firstNumber(summary.hit_at_k);
+}
+
+function caseRecall(metrics: EvalCaseMetrics) {
+  return firstNumber(metrics.recall_at_k, metrics.context_recall_at_k);
+}
+
+function caseRank(metrics: EvalCaseMetrics) {
+  return firstNumber(metrics.ndcg_at_k, metrics.mrr_at_k);
+}
+
+function caseRankLabel(metrics: EvalCaseMetrics) {
+  return metrics.ndcg_at_k == null && metrics.mrr_at_k != null ? "MRR@K" : "nDCG@K";
+}
+
+function caseFilteredPrecision(metrics: EvalCaseMetrics) {
+  return firstNumber(metrics.filtered_precision, metrics.precision_at_effective_k, metrics.precision_at_configured_k);
+}
+
+function caseFilteredRecall(metrics: EvalCaseMetrics) {
+  return firstNumber(metrics.filtered_recall, metrics.context_recall_at_k);
+}
+
+function caseHit(metrics: EvalCaseMetrics) {
+  return firstNumber(metrics.hit_at_k);
+}
+
+function firstNumber(...values: Array<number | undefined>) {
+  return values.find((value) => value != null && Number.isFinite(value));
+}
+
+function metricChanged(left?: number, right?: number) {
+  return Math.abs((right ?? 0) - (left ?? 0)) > 0.000001;
+}
+
+function metricDiff(left?: number, right?: number) {
+  const diff = (right ?? 0) - (left ?? 0);
+  return Math.abs(diff) > 0.000001 ? diff : 0;
+}
+
 function buildCompareRows(left: EvalRun, right: EvalRun) {
   return [
     compareRow("状态", formatRunStatus(left.status), formatRunStatus(right.status)),
     compareRow("进度", formatProgress(left), formatProgress(right)),
-    compareRow("Hit@K", formatPercent(left.summary.hit_at_k), formatPercent(right.summary.hit_at_k), left.summary.hit_at_k, right.summary.hit_at_k, "percent"),
-    compareRow("Context Recall@K", formatPercent(left.summary.context_recall_at_k), formatPercent(right.summary.context_recall_at_k), left.summary.context_recall_at_k, right.summary.context_recall_at_k, "percent"),
-    compareRow("MRR@K", formatNumber(left.summary.mrr_at_k), formatNumber(right.summary.mrr_at_k), left.summary.mrr_at_k, right.summary.mrr_at_k, "number"),
-    compareRow("Precision@CK", formatPercent(left.summary.precision_at_configured_k), formatPercent(right.summary.precision_at_configured_k), left.summary.precision_at_configured_k, right.summary.precision_at_configured_k, "percent"),
-    compareRow("Precision@EK", formatPercent(left.summary.precision_at_effective_k), formatPercent(right.summary.precision_at_effective_k), left.summary.precision_at_effective_k, right.summary.precision_at_effective_k, "percent"),
-    compareRow("Zero Context Rate", formatPercent(left.summary.zero_context_rate), formatPercent(right.summary.zero_context_rate), left.summary.zero_context_rate, right.summary.zero_context_rate, "percent"),
-    compareRow("Avg EffectiveK", formatNumber(left.summary.avg_effective_k), formatNumber(right.summary.avg_effective_k), left.summary.avg_effective_k, right.summary.avg_effective_k, "number"),
+    compareRow("Success Rate", formatPercent(summarySuccessRate(left.summary)), formatPercent(summarySuccessRate(right.summary)), summarySuccessRate(left.summary), summarySuccessRate(right.summary), "percent"),
+    compareRow("Hit@K", formatPercent(summaryHit(left.summary)), formatPercent(summaryHit(right.summary)), summaryHit(left.summary), summaryHit(right.summary), "percent"),
+    compareRow("Recall@K", formatPercent(summaryRecall(left.summary)), formatPercent(summaryRecall(right.summary)), summaryRecall(left.summary), summaryRecall(right.summary), "percent"),
+    compareRow("nDCG@K", formatNumber(summaryRank(left.summary)), formatNumber(summaryRank(right.summary)), summaryRank(left.summary), summaryRank(right.summary), "number"),
+    compareRow("Filtered Precision", formatPercent(summaryFilteredPrecision(left.summary)), formatPercent(summaryFilteredPrecision(right.summary)), summaryFilteredPrecision(left.summary), summaryFilteredPrecision(right.summary), "percent"),
+    compareRow("Filtered Recall", formatPercent(summaryFilteredRecall(left.summary)), formatPercent(summaryFilteredRecall(right.summary)), summaryFilteredRecall(left.summary), summaryFilteredRecall(right.summary), "percent"),
+    compareRow("Empty Context Rate", formatPercent(summaryEmptyContextRate(left.summary)), formatPercent(summaryEmptyContextRate(right.summary)), summaryEmptyContextRate(left.summary), summaryEmptyContextRate(right.summary), "percent"),
+    compareRow("Filtered Avg K", formatNumber(summaryFilteredAvgK(left.summary)), formatNumber(summaryFilteredAvgK(right.summary)), summaryFilteredAvgK(left.summary), summaryFilteredAvgK(right.summary), "number"),
+    compareRow("Errors", formatCount(left.summary.error_count), formatCount(right.summary.error_count), left.summary.error_count, right.summary.error_count, "number"),
     compareRow("configured_k", formatConfigValue(left.rag_config?.configured_k), formatConfigValue(right.rag_config?.configured_k)),
     compareRow("retrieval_top_n", formatConfigValue(left.rag_config?.retrieval_top_n), formatConfigValue(right.rag_config?.retrieval_top_n)),
     compareRow("similarity_threshold", formatConfigValue(left.rag_config?.similarity_threshold), formatConfigValue(right.rag_config?.similarity_threshold)),
@@ -1161,14 +1246,15 @@ function buildCaseCompareRows(leftResults: EvalRunResult[], rightResults: EvalRu
 }
 
 function resolveCaseDiffType(left: EvalRunResult, right: EvalRunResult): CaseDiffType {
-  if (right.metrics.hit_at_k > left.metrics.hit_at_k) return "improved";
-  if (right.metrics.hit_at_k < left.metrics.hit_at_k) return "regressed";
-  const recallDiff = right.metrics.context_recall_at_k - left.metrics.context_recall_at_k;
-  if (recallDiff > 0.000001) return "improved";
-  if (recallDiff < -0.000001) return "regressed";
-  const mrrDiff = right.metrics.mrr_at_k - left.metrics.mrr_at_k;
-  if (mrrDiff > 0.000001) return "improved";
-  if (mrrDiff < -0.000001) return "regressed";
+  const hitDiff = metricDiff(caseHit(left.metrics), caseHit(right.metrics));
+  if (hitDiff > 0) return "improved";
+  if (hitDiff < 0) return "regressed";
+  const recallDiff = metricDiff(caseRecall(left.metrics), caseRecall(right.metrics));
+  if (recallDiff > 0) return "improved";
+  if (recallDiff < 0) return "regressed";
+  const rankDiff = metricDiff(caseRank(left.metrics), caseRank(right.metrics));
+  if (rankDiff > 0) return "improved";
+  if (rankDiff < 0) return "regressed";
   return "unchanged";
 }
 
@@ -1316,6 +1402,10 @@ function formatPercent(value?: number) {
 
 function formatNumber(value?: number) {
   return Number(value ?? 0).toFixed(2);
+}
+
+function formatCount(value?: number) {
+  return String(Math.round(value ?? 0));
 }
 
 function formatDate(value?: string) {
