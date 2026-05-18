@@ -1,5 +1,3 @@
-export type Distribution = Record<string, number>;
-
 export type EvalSetSummary = {
   total?: number;
 };
@@ -111,17 +109,31 @@ export type EvalRunResult = {
   created_at?: string;
 };
 
-export type EvalSetGeneratePayload = {
-  name: string;
-  total_count: number;
-  source_path: string;
-  eval_type_distribution: Distribution;
-  question_style_distribution: Distribution;
-  difficulty_distribution: Distribution;
-  category_distribution: Distribution;
+export type ReferenceContext = {
+  chunk_id: string;
+  parent_faq_id?: string;
+  title?: string;
+  content?: string;
+  source_url?: string;
 };
 
-export type EvalSetGenerateResponse = {
+export type EvalSetImportCase = {
+  case_id: string;
+  question: string;
+  eval_type: "single_chunk" | "multi_chunk";
+  question_style: "original" | "colloquial" | "synonym" | "abbreviated";
+  difficulty: "easy" | "medium" | "hard";
+  category: string;
+  expected_chunk_ids: string[];
+  reference_contexts?: ReferenceContext[];
+};
+
+export type EvalSetImportPayload = {
+  name: string;
+  cases: EvalSetImportCase[];
+};
+
+export type EvalSetImportResponse = {
   ok: boolean;
   eval_set_id: string;
   summary: EvalSetSummary;

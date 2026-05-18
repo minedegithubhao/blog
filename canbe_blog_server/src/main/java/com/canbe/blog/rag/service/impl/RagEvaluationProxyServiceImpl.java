@@ -59,6 +59,8 @@ public class RagEvaluationProxyServiceImpl implements RagEvaluationProxyService 
                 .POST(HttpRequest.BodyPublishers.ofString(body == null ? "{}" : objectMapper.writeValueAsString(body), StandardCharsets.UTF_8))
                 .build();
             return send(request);
+        } catch (BusinessException exception) {
+            throw exception;
         } catch (Exception exception) {
             throw new BusinessException(4008, "RAG评估服务调用失败");
         }
@@ -78,7 +80,7 @@ public class RagEvaluationProxyServiceImpl implements RagEvaluationProxyService 
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new BusinessException(4004, "RAG评估服务返回异常");
+                throw new BusinessException(4004, agentsErrorMessage(response.body()));
             }
             String body = trim(response.body());
             if (body.isEmpty() || (body.charAt(0) != '{' && body.charAt(0) != '[')) {
@@ -129,5 +131,22 @@ public class RagEvaluationProxyServiceImpl implements RagEvaluationProxyService 
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private String agentsErrorMessage(String responseBody) {
+        try {
+            String body = trim(responseBody);
+            if (body.isEmpty() || (body.charAt(0) != '{' && body.charAt(0) != '[')) {
+                return "RAG评估服务返回异常";
+            }
+            JsonNode node = objectMapper.readTree(body);
+            JsonNode message = node.get("message");
+            if (message != null && message.isTextual() && !message.asText().isBlank()) {
+                return message.asText();
+            }
+        } catch (Exception ignored) {
+            return "RAG评估服务返回异常";
+        }
+        return "RAG评估服务返回异常";
     }
 }

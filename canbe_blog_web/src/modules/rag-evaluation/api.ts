@@ -1,6 +1,6 @@
 import type { ApiResult } from "@/types/api";
 import { getAuthHeaders } from "@/modules/auth/utils/auth-storage";
-import type { EvalRun, EvalRunConfig, EvalRunResult, EvalSet, EvalSetDeleteResponse, EvalSetGeneratePayload, EvalSetGenerateResponse } from "./types";
+import type { EvalRun, EvalRunConfig, EvalRunResult, EvalSet, EvalSetDeleteResponse, EvalSetImportPayload, EvalSetImportResponse } from "./types";
 
 async function parseResult<T>(response: Response): Promise<T> {
   const result = (await response.json()) as ApiResult<T> | ({ code?: string; message?: string } & T);
@@ -26,13 +26,36 @@ export async function listEvalSets(params: { limit?: number; skip?: number } = {
   return data.items ?? [];
 }
 
-export async function generateEvalSet(payload: EvalSetGeneratePayload): Promise<EvalSetGenerateResponse> {
-  const response = await fetch("/api/v1/rag-evaluation/eval-sets/generate", {
+export async function importEvalSet(payload: EvalSetImportPayload): Promise<EvalSetImportResponse> {
+  const response = await fetch("/api/v1/rag-evaluation/eval-sets/import", {
     method: "POST",
     headers: getAuthHeaders(true),
     body: JSON.stringify(payload)
   });
-  return parseResult<EvalSetGenerateResponse>(response);
+  return parseResult<EvalSetImportResponse>(response);
+}
+
+export async function downloadEvalSetTemplate() {
+  const response = await fetch("/api/v1/rag-evaluation/eval-sets/template", {
+    headers: getAuthHeaders()
+  });
+  if (!response.ok) {
+    throw new Error("下载评估集模板失败");
+  }
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filenameFromDisposition(response.headers.get("content-disposition")) || "rag-eval-set-template.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+function filenameFromDisposition(contentDisposition: string | null) {
+  const match = contentDisposition?.match(/filename="?([^"]+)"?/i);
+  return match?.[1] ?? "";
 }
 
 export async function deleteEvalSet(evalSetId: string): Promise<EvalSetDeleteResponse> {

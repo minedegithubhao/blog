@@ -100,12 +100,40 @@ class RagEvaluationProxyServiceImplTest {
         assertEquals(4004, exception.getCode());
     }
 
+    @Test
+    void preservesAgentsValidationMessageForNon2xxJsonResponse() {
+        CapturingHttpClient httpClient = new CapturingHttpClient(
+            "{\"code\":\"EVAL_SET_IMPORT_INVALID\",\"message\":\"duplicate case_id: dup\"}",
+            400
+        );
+        RagEvaluationProxyServiceImpl service = new RagEvaluationProxyServiceImpl(
+            objectMapper,
+            httpClient,
+            "http://127.0.0.1:8801",
+            ""
+        );
+
+        BusinessException exception = org.junit.jupiter.api.Assertions.assertThrows(
+            BusinessException.class,
+            () -> service.forwardPost("/admin/eval-sets/import", objectMapper.createObjectNode())
+        );
+
+        assertEquals(4004, exception.getCode());
+        assertEquals("duplicate case_id: dup", exception.getMessage());
+    }
+
     private static class CapturingHttpClient extends HttpClient {
         private final String responseBody;
+        private final int statusCode;
         private final AtomicReference<HttpRequest> lastRequest = new AtomicReference<>();
 
         private CapturingHttpClient(String responseBody) {
+            this(responseBody, 200);
+        }
+
+        private CapturingHttpClient(String responseBody, int statusCode) {
             this.responseBody = responseBody;
+            this.statusCode = statusCode;
         }
 
         @Override
@@ -113,7 +141,7 @@ class RagEvaluationProxyServiceImplTest {
             lastRequest.set(request);
             @SuppressWarnings("unchecked")
             T body = (T) responseBody;
-            return new SimpleHttpResponse<>(request, body);
+            return new SimpleHttpResponse<>(request, body, statusCode);
         }
 
         @Override
@@ -179,10 +207,10 @@ class RagEvaluationProxyServiceImplTest {
         }
     }
 
-    private record SimpleHttpResponse<T>(HttpRequest request, T body) implements HttpResponse<T> {
+    private record SimpleHttpResponse<T>(HttpRequest request, T body, int statusCode) implements HttpResponse<T> {
         @Override
         public int statusCode() {
-            return 200;
+            return statusCode;
         }
 
         @Override

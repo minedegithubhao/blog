@@ -4,6 +4,10 @@ import com.canbe.blog.common.Result;
 import com.canbe.blog.rag.service.RagEvaluationProxyService;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +29,21 @@ public class RagEvaluationController {
     @PostMapping("/eval-sets/generate")
     public Result<JsonNode> generate(@RequestBody JsonNode body) {
         return Result.success(proxyService.forwardPost("/admin/eval-sets/generate", body));
+    }
+
+    @GetMapping("/eval-sets/template")
+    public ResponseEntity<JsonNode> downloadTemplate() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition.attachment().filename("rag-eval-set-template.json").build());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(proxyService.forwardGet("/admin/eval-sets/template", ""));
+    }
+
+    @PostMapping("/eval-sets/import")
+    public Result<JsonNode> importEvalSet(@RequestBody JsonNode body) {
+        return Result.success(proxyService.forwardPost("/admin/eval-sets/import", body));
     }
 
     @GetMapping("/eval-sets")

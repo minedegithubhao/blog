@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { Eye, History, Play, Plus, RefreshCcw, Trash2 } from "lucide-react";
+import { Download, Eye, History, Play, RefreshCcw, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,24 +39,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { deleteEvalSet, generateEvalSet, getEvalRun, listEvalRunResults, listEvalRuns, listEvalSets, startEvalRun } from "../api";
-import type { Distribution, EvalCaseMetrics, EvalRun, EvalRunConfig, EvalRunResult, EvalRunSummary, EvalSet, EvalSetGeneratePayload } from "../types";
+import { deleteEvalSet, downloadEvalSetTemplate, getEvalRun, importEvalSet, listEvalRunResults, listEvalRuns, listEvalSets, startEvalRun } from "../api";
+import type { EvalCaseMetrics, EvalRun, EvalRunConfig, EvalRunResult, EvalRunSummary, EvalSet, EvalSetImportPayload } from "../types";
 
-const SOURCE_PATH = "exports/jd_help_faq.chunks.jsonl";
-const CATEGORY_DEFAULTS: Distribution = {
-  "特色服务": 0.213198,
-  "售后服务": 0.151438,
-  "历史规则": 0.14467,
-  "账户及会员": 0.113367,
-  "购物指南": 0.096447,
-  "支付问题": 0.08714,
-  "订单百事通": 0.059222,
-  "企业会员帮助中心": 0.05753,
-  "配送方式": 0.046531,
-  "发票问题": 0.030457
-};
-const QUESTION_STYLE_DEFAULTS: Distribution = { original: 0.3, colloquial: 0.4, synonym: 0.2, abbreviated: 0.1 };
-const DIFFICULTY_DEFAULTS: Distribution = { easy: 0.3, medium: 0.5, hard: 0.2 };
 const RUN_CONFIG: EvalRunConfig = { configured_k: 5, retrieval_top_n: 20, similarity_threshold: 0.72, rerank_enabled: true };
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
@@ -92,7 +77,7 @@ export function RagEvaluationPage() {
   const [appliedQuery, setAppliedQuery] = useState<EvalSetQuery>(EMPTY_QUERY);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
-  const [generateOpen, setGenerateOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [historyEvalSet, setHistoryEvalSet] = useState<EvalSet | null>(null);
   const [deleteEvalSetTarget, setDeleteEvalSetTarget] = useState<EvalSet | null>(null);
   const [detailRun, setDetailRun] = useState<EvalRun | null>(null);
@@ -188,6 +173,14 @@ export function RagEvaluationPage() {
     setPage(1);
   }
 
+  async function handleDownloadTemplate() {
+    try {
+      await downloadEvalSetTemplate();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "下载评估集模板失败");
+    }
+  }
+
   const filteredEvalSets = useMemo(() => filterEvalSets(evalSets, appliedQuery), [evalSets, appliedQuery]);
   const total = filteredEvalSets.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -227,9 +220,13 @@ export function RagEvaluationPage() {
               <Button type="button" variant="outline" className="cursor-pointer" onClick={handleReset}>
                 重置
               </Button>
-              <Button type="button" className="cursor-pointer" onClick={() => setGenerateOpen(true)}>
-                <Plus className="h-4 w-4" />
-                一键生成评估集
+              <Button type="button" variant="outline" className="cursor-pointer" onClick={() => void handleDownloadTemplate()}>
+                <Download className="h-4 w-4" />
+                下载评估集模板
+              </Button>
+              <Button type="button" className="cursor-pointer" onClick={() => setImportOpen(true)}>
+                <Upload className="h-4 w-4" />
+                手动上传评估集
               </Button>
             </div>
           </form>
@@ -354,11 +351,11 @@ export function RagEvaluationPage() {
         </CardContent>
       </Card>
 
-      <GenerateEvalSetDialog
-        open={generateOpen}
-        onOpenChange={setGenerateOpen}
-        onGenerated={async () => {
-          setGenerateOpen(false);
+      <ImportEvalSetDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImported={async () => {
+          setImportOpen(false);
           await refreshEvalSets();
         }}
       />
@@ -413,41 +410,60 @@ export function RagEvaluationPage() {
   );
 }
 
-function GenerateEvalSetDialog({ open, onOpenChange, onGenerated }: { open: boolean; onOpenChange: (open: boolean) => void; onGenerated: () => Promise<void> }) {
-  const [step, setStep] = useState(1);
-  const [name, setName] = useState("jd_help_eval_v1");
-  const [totalCount, setTotalCount] = useState(100);
-  const [evalMode, setEvalMode] = useState<"single_chunk" | "multi_chunk" | "mixed">("mixed");
-  const [evalTypeDist, setEvalTypeDist] = useState<Distribution>({ single_chunk: 0.7, multi_chunk: 0.3 });
-  const [questionStyleDist, setQuestionStyleDist] = useState<Distribution>(QUESTION_STYLE_DEFAULTS);
-  const [difficultyDist, setDifficultyDist] = useState<Distribution>(DIFFICULTY_DEFAULTS);
-  const [categoryDist, setCategoryDist] = useState<Distribution>(CATEGORY_DEFAULTS);
+function ImportEvalSetDialog({ open, onOpenChange, onImported }: { open: boolean; onOpenChange: (open: boolean) => void; onImported: () => Promise<void> }) {
+  const [name, setName] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [cases, setCases] = useState<EvalSetImportPayload["cases"] | null>(null);
+  const [validationError, setValidationError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const finalEvalTypeDist = useMemo(() => {
-    if (evalMode === "single_chunk") return { single_chunk: 1 };
-    if (evalMode === "multi_chunk") return { multi_chunk: 1 };
-    return evalTypeDist;
-  }, [evalMode, evalTypeDist]);
-  const valid = isDistributionValid(finalEvalTypeDist) && isDistributionValid(questionStyleDist) && isDistributionValid(difficultyDist) && isDistributionValid(categoryDist);
+  useEffect(() => {
+    if (!open) {
+      setName("");
+      setFileName("");
+      setCases(null);
+      setValidationError("");
+      setSubmitting(false);
+    }
+  }, [open]);
+
+  async function handleFileChange(file?: File) {
+    setCases(null);
+    setValidationError("");
+    setFileName(file?.name ?? "");
+    if (!file) {
+      return;
+    }
+    setName((current) => current.trim() || file.name.replace(/\.json$/i, ""));
+    if (!file.name.toLowerCase().endsWith(".json")) {
+      setValidationError("请选择 .json 格式的评估集文件");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(await file.text()) as unknown;
+      setCases(validateImportCases(parsed));
+    } catch (error) {
+      setValidationError(error instanceof Error ? error.message : "JSON 文件解析失败");
+    }
+  }
 
   async function handleSubmit() {
-    const payload: EvalSetGeneratePayload = {
-      name,
-      total_count: totalCount,
-      source_path: SOURCE_PATH,
-      eval_type_distribution: finalEvalTypeDist,
-      question_style_distribution: questionStyleDist,
-      difficulty_distribution: difficultyDist,
-      category_distribution: categoryDist
-    };
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setValidationError("评估集名称不能为空");
+      return;
+    }
+    if (!cases) {
+      setValidationError("请先选择有效的 JSON 评估集文件");
+      return;
+    }
     setSubmitting(true);
     try {
-      const response = await generateEvalSet(payload);
-      toast.success(`已生成评估集：${response.eval_set_id}`);
-      await onGenerated();
+      const response = await importEvalSet({ name: trimmedName, cases });
+      toast.success(`已上传评估集：${response.eval_set_id}`);
+      await onImported();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "生成评估集失败");
+      toast.error(error instanceof Error ? error.message : "上传评估集失败");
     } finally {
       setSubmitting(false);
     }
@@ -455,55 +471,40 @@ function GenerateEvalSetDialog({ open, onOpenChange, onGenerated }: { open: bool
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>一键生成评估集</DialogTitle>
-          <DialogDescription>步骤：① 基础信息 → ② 抽样策略 → ③ 生成预览与确认</DialogDescription>
+          <DialogTitle>手动上传评估集</DialogTitle>
+          <DialogDescription>填写评估集名称并上传 JSON 案例数组，系统会先做基础结构校验，再写入评估集。</DialogDescription>
         </DialogHeader>
-        {step === 1 ? (
-          <div className="grid gap-4">
-            <Field label="评估集名称" value={name} onChange={setName} />
-            <NumberField label="生成数量" value={totalCount} onChange={setTotalCount} />
-            <ReadOnly label="数据源" value={SOURCE_PATH} />
-            <ReadOnly label="数据源指纹" value="后端生成时自动计算 source_hash" />
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label>评估集名称</Label>
+            <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="例如：jd_help_eval_manual_v1" />
           </div>
-        ) : null}
-        {step === 2 ? (
-          <div className="space-y-5">
-            <section className="space-y-2">
-              <Label>评测类型 eval_type</Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  ["single_chunk", "single_chunk"],
-                  ["multi_chunk", "multi_chunk"],
-                  ["mixed", "single_chunk + multi_chunk"]
-                ].map(([value, label]) => (
-                  <Button key={value} type="button" variant={evalMode === value ? "default" : "outline"} onClick={() => setEvalMode(value as typeof evalMode)}>
-                    {label}
-                  </Button>
-                ))}
-              </div>
-              {evalMode === "mixed" ? <DistributionEditor value={evalTypeDist} onChange={setEvalTypeDist} labels={{ single_chunk: "single_chunk", multi_chunk: "multi_chunk" }} /> : null}
-            </section>
-            <DistributionEditor title="问题改写方式 question_style" value={questionStyleDist} onChange={setQuestionStyleDist} labels={{ original: "original", colloquial: "colloquial", synonym: "synonym", abbreviated: "abbreviated" }} onReset={() => setQuestionStyleDist(QUESTION_STYLE_DEFAULTS)} />
-            <DistributionEditor title="难度 difficulty" value={difficultyDist} onChange={setDifficultyDist} labels={{ easy: "easy", medium: "medium", hard: "hard" }} onReset={() => setDifficultyDist(DIFFICULTY_DEFAULTS)} />
-            <DistributionEditor title="类别分布 category" value={categoryDist} onChange={setCategoryDist} labels={Object.fromEntries(Object.keys(CATEGORY_DEFAULTS).map((key) => [key, key]))} onReset={() => setCategoryDist(CATEGORY_DEFAULTS)} />
+          <div className="grid gap-2">
+            <Label>评估集 JSON 文件</Label>
+            <Input type="file" accept="application/json,.json" onChange={(event) => void handleFileChange(event.target.files?.[0])} />
           </div>
-        ) : null}
-        {step === 3 ? <GeneratePreview totalCount={totalCount} evalTypeDist={finalEvalTypeDist} questionStyleDist={questionStyleDist} difficultyDist={difficultyDist} categoryDist={categoryDist} /> : null}
+          {fileName ? <div className="text-sm text-muted-foreground">已选择：{fileName}</div> : null}
+          {cases ? (
+            <div className="rounded-md border bg-green-50 px-3 py-2 text-sm text-green-700">
+              校验通过：共 {cases.length} 条案例
+            </div>
+          ) : null}
+          {validationError ? (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {validationError}
+            </div>
+          ) : null}
+          <div className="rounded-md border bg-muted/30 px-3 py-2 text-xs leading-6 text-muted-foreground">
+            JSON 顶层必须是案例数组；每个 case 需要包含 case_id、question、eval_type、question_style、difficulty、category、expected_chunk_ids。
+          </div>
+        </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => (step === 1 ? onOpenChange(false) : setStep(step - 1))}>
-            {step === 1 ? "取消" : "上一步"}
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
+          <Button type="button" onClick={() => void handleSubmit()} disabled={!name.trim() || !cases || submitting}>
+            {submitting ? "上传中..." : "上传评估集"}
           </Button>
-          {step < 3 ? (
-            <Button type="button" onClick={() => setStep(step + 1)} disabled={step === 2 && !valid}>
-              下一步
-            </Button>
-          ) : (
-            <Button type="button" onClick={() => void handleSubmit()} disabled={!valid || submitting}>
-              确认生成
-            </Button>
-          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -1031,56 +1032,6 @@ function TimingSummaryCard({ run }: { run: EvalRun }) {
   );
 }
 
-function DistributionEditor({ title, value, onChange, labels, onReset }: { title?: string; value: Distribution; onChange: (value: Distribution) => void; labels: Record<string, string>; onReset?: () => void }) {
-  return (
-    <section className="space-y-2">
-      {title ? <div className="flex items-center justify-between"><Label>{title}</Label>{onReset ? <Button type="button" size="sm" variant="ghost" onClick={onReset}>恢复推荐值</Button> : null}</div> : null}
-      <div className="grid gap-2">
-        {Object.entries(value).map(([key, raw]) => (
-          <div key={key} className="grid grid-cols-[1fr_120px] items-center gap-3">
-            <span className="text-sm">{labels[key] ?? key}</span>
-            <Input type="number" min={0} max={100} value={Math.round(raw * 100)} onChange={(event) => onChange({ ...value, [key]: Number(event.target.value) / 100 })} />
-          </div>
-        ))}
-      </div>
-      <div className={isDistributionValid(value) ? "text-xs text-green-700" : "text-xs text-red-600"}>合计：{Math.round(sumDistribution(value) * 100)}%</div>
-    </section>
-  );
-}
-
-function GeneratePreview({ totalCount, evalTypeDist, questionStyleDist, difficultyDist, categoryDist }: { totalCount: number; evalTypeDist: Distribution; questionStyleDist: Distribution; difficultyDist: Distribution; categoryDist: Distribution }) {
-  return (
-    <div className="space-y-4 text-sm">
-      <p className="font-medium">预计生成：{totalCount} 条</p>
-      <PreviewBlock title="eval_type" total={totalCount} value={evalTypeDist} />
-      <PreviewBlock title="question_style" total={totalCount} value={questionStyleDist} />
-      <PreviewBlock title="difficulty" total={totalCount} value={difficultyDist} />
-      <PreviewBlock title="category" total={totalCount} value={categoryDist} />
-      <div className="rounded-lg border bg-muted/30 p-3">
-        <div className="font-medium">示例案例</div>
-        <div className="mt-2 text-muted-foreground">question: 下单后还能改规格吗？</div>
-        <div className="text-muted-foreground">expected_retrieved_chunk_ids: [chunk_订单相关_2_001]</div>
-      </div>
-    </div>
-  );
-}
-
-function PreviewBlock({ title, total, value }: { title: string; total: number; value: Distribution }) {
-  return <div><div className="font-medium">{title}</div>{Object.entries(value).map(([key, weight]) => <div key={key} className="text-muted-foreground">{key}: {Math.round(total * weight)} 条</div>)}</div>;
-}
-
-function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
-  return <div className="grid gap-2"><Label>{label}</Label><Input value={value} onChange={(event) => onChange(event.target.value)} /></div>;
-}
-
-function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
-  return <div className="grid gap-2"><Label>{label}</Label><Input type="number" value={value} onChange={(event) => onChange(Number(event.target.value))} /></div>;
-}
-
-function ReadOnly({ label, value }: { label: string; value: string }) {
-  return <div className="grid gap-2"><Label>{label}</Label><div className="rounded-md border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">{value}</div></div>;
-}
-
 function MetricCard({ label, value }: { label: string; value: string }) {
   return <div className="rounded-lg border bg-white p-3"><div className="text-xs text-muted-foreground">{label}</div><div className="mt-1 text-xl font-semibold text-gray-950">{value}</div></div>;
 }
@@ -1388,12 +1339,62 @@ function classNames(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
-function isDistributionValid(value: Distribution) {
-  return Math.abs(sumDistribution(value) - 1) < 0.000001;
+function validateImportCases(value: unknown): EvalSetImportPayload["cases"] {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error("JSON 顶层必须是非空案例数组");
+  }
+  const seenCaseIds = new Set<string>();
+  return value.map((item, index) => {
+    const path = `cases[${index + 1}]`;
+    if (!isRecord(item)) {
+      throw new Error(`${path} 必须是对象`);
+    }
+    const caseId = readRequiredString(item, "case_id", `${path}.case_id`);
+    if (seenCaseIds.has(caseId)) {
+      throw new Error(`case_id 重复：${caseId}`);
+    }
+    seenCaseIds.add(caseId);
+    const expectedChunkIds = item.expected_chunk_ids;
+    if (!Array.isArray(expectedChunkIds) || expectedChunkIds.length === 0 || expectedChunkIds.some((id) => typeof id !== "string" || !id.trim())) {
+      throw new Error(`${path}.expected_chunk_ids 必须是非空字符串数组`);
+    }
+    return {
+      case_id: caseId,
+      question: readRequiredString(item, "question", `${path}.question`),
+      eval_type: readEnum(item, "eval_type", `${path}.eval_type`, ["single_chunk", "multi_chunk"]),
+      question_style: readEnum(item, "question_style", `${path}.question_style`, ["original", "colloquial", "synonym", "abbreviated"]),
+      difficulty: readEnum(item, "difficulty", `${path}.difficulty`, ["easy", "medium", "hard"]),
+      category: readRequiredString(item, "category", `${path}.category`),
+      expected_chunk_ids: expectedChunkIds.map((id) => id.trim()),
+      reference_contexts: Array.isArray(item.reference_contexts) ? item.reference_contexts.filter(isRecord).map((context) => ({
+        chunk_id: typeof context.chunk_id === "string" ? context.chunk_id : "",
+        parent_faq_id: typeof context.parent_faq_id === "string" ? context.parent_faq_id : undefined,
+        title: typeof context.title === "string" ? context.title : undefined,
+        content: typeof context.content === "string" ? context.content : undefined,
+        source_url: typeof context.source_url === "string" ? context.source_url : undefined,
+      })) : undefined,
+    };
+  });
 }
 
-function sumDistribution(value: Distribution) {
-  return Object.values(value).reduce((sum, item) => sum + item, 0);
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readRequiredString(source: Record<string, unknown>, key: string, label: string) {
+  const value = source[key];
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${label} 不能为空`);
+  }
+  return value.trim();
+}
+
+function readEnum<T extends string>(source: Record<string, unknown>, key: string, label: string, allowed: T[]): T {
+  const value = readRequiredString(source, key, label);
+  if (!allowed.includes(value as T)) {
+    throw new Error(`${label} 取值不支持：${value}`);
+  }
+  return value as T;
 }
 
 function formatPercent(value?: number) {
